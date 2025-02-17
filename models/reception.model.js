@@ -33,14 +33,13 @@ const Reception = sequelize.define("Reception", {
   },
 });
 
+Field.hasMany(Reception, { foreignKey: "fieldID" });
+Reception.belongsTo(Field, { foreignKey: "fieldID" });
 
-Field.hasMany(Reception, {foreignKey: "fieldID"});
-Reception.belongsTo(Field, {foreignKey: "fieldID"});
+User.hasMany(Reception, { foreignKey: "userID" });
+Reception.belongsTo(User, { foreignKey: "userID" });
 
-User.hasMany(Reception, {foreignKey: "userID"});
-Reception.belongsTo(User, {foreignKey: "userID"});
-
-Branch.hasOne(Reception, {foreignKey: "branchID"});
-Reception.belongsTo(Branch, {foreignKey: "branchID"});
+Branch.hasOne(Reception, { foreignKey: "branchID" });
+Reception.belongsTo(Branch, { foreignKey: "branchID" });
 
 export default Reception;

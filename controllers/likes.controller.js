@@ -104,4 +104,4 @@ async function sortByLikes(req, res) {
 }
 
 
-export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove }
+export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove , sortByLikes}
