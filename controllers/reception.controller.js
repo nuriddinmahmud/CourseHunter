@@ -2,7 +2,8 @@ import Reception from '../models/reception.model.js';
 
 async function findAll(req, res) {
     try {
-        
+        const findAll = Reception.findAll();
+        res.status(200).send({data: findAll});
     } catch (error) {
         res.status(500).send({error_message: error.message});
     }
