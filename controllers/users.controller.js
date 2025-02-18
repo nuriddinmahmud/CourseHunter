@@ -13,6 +13,7 @@ import { Op, where } from "sequelize";
 //Registering
 async function register(req, res) {
   try {
+    
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
