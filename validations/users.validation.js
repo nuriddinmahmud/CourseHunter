@@ -1,31 +1,27 @@
 import Joi from "joi";
 
-function usersValidation(data) {
+export function usersValidation(data) {
   const usersSchema = Joi.object({
-    firstname: Joi.string().min(2).required(),
-    lastname: Joi.string().min(2).required(),
-    avatar: Joi.string().required(),
+    firstName: Joi.string().max(25).min(2).required(),
+    lastName: Joi.string().min(2).required(),
     email: Joi.string().required(),
     phone: Joi.string().required(),
     password: Joi.string().required(),
     role: Joi.string().required(),
+    avatar: Joi.string().required()
   });
-  return usersSchema.validate(data);
+  return usersSchema.validate(data, {abortEarly: true});
 }
 
-function usersValidationUpdate(data) {
+export function usersValidationUpdate(data) {
   const usersSchema = Joi.object({
-    firstname: Joi.string().min(2),
-    lastname: Joi.string().min(2),
-    avatar: Joi.string(),
+    firstName: Joi.string().min(2),
+    lastName: Joi.string().min(2),
     email: Joi.string(),
     phone: Joi.string(),
     password: Joi.string(), 
     role: Joi.string(),
+    avatar: Joi.string()
   });
-  return usersSchema.validate(data);
+  return usersSchema.validate(data, {abortEarly: true});
 }
-
-
-export { usersValidation, usersValidationUpdate };
-

@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./config/database.js";
-import mainRouter from "./routes/mainRoute.routes.js";
+import mainRouter from "./routes/index.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 7777;
@@ -22,7 +22,7 @@ app.use(
 async function bootstrap() {
   try {
     await sequelize.sync();
-    console.log("Connected to database successfully✅");
+    console.log("Connected to database successfully ✅");
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   } catch (error) {

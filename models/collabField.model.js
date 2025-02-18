@@ -10,7 +10,6 @@ const CollabField = sequelize.define("CollabField", {
       model: Field,
       key: "id",
     },
-
     allowNull: false,
   },
 

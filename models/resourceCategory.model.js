@@ -9,6 +9,7 @@ const ResourceCategory = sequelize.define("ResourceCategory", {
 
   image: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
 });
 

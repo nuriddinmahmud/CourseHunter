@@ -11,9 +11,9 @@ export const create = async (req, res) => {
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     const newCategory = await ResourceCategory.create(req.body);
-    res.status(201).json(newCategory);
+    res.status(200).send({data: newCategory});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).send({ error: err.message });
   }
 };
 

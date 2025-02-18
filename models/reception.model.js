@@ -7,29 +7,29 @@ import User from "./users.model.js";
 const Reception = sequelize.define("Reception", {
   fieldID: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     references: {
       model: Field,
       key: "id",
     },
+    allowNull: false,
   },
 
   userID: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     references: {
       model: User,
       key: "id",
     },
+    allowNull: false,
   },
 
   branchID: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     references: {
       model: Branch,
       key: "id",
     },
+    allowNull: false,
   },
 });
 

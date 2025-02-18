@@ -21,11 +21,11 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
 
   userID: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     references: {
       model: User,
       key: "id",
     },
+    allowNull: false,
   },
 
   regionID: {

@@ -1,4 +1,4 @@
-import { Users } from "../models/users.model.js";
+import Users from "../models/users.model.js";
 import {
   usersValidation,
   usersValidationUpdate,
@@ -14,9 +14,8 @@ import { Op } from "sequelize";
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
 
-// Nodemailer
 const transporter = nodemailer.createTransport({
-  service: "coderznz@gmail.com",
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -25,79 +24,40 @@ const transporter = nodemailer.createTransport({
 
 totp.options = { step: 1800, digits: 6 };
 
-// registering
 async function register(req, res) {
   try {
-    const filename = req.file ? req.file.filename : null;
-    const { firstName, lastName, email, password, phone, role } = req.body;
+    // const findUser = await Users.findOne({ where: body });
+    // if (findUser) {
+    //   if (findUser.avatar) {
+    //     fs.unlink(findUser.avatar.path, (e) => {
+    //       console.log(e ? e.message : "image deleted");
+    //     });
+    //   }
+    //   return res
+    //     .status(403)
+    //     .send({ message: "This account already exists ❗" });
+    // }
 
-    const findUser = await Users.findOne({ where: { email } });
-    if (findUser) {
-      if (req.file) {
-        fs.unlink(req.file.path, (e) => {
-          console.log(e ? e.message : "image deleted");
-        });
-      }
-      return res
-        .status(403)
-        .send({ message: "This account already exists ❗" });
-    }
-
-    const { error, value } = usersValidation({
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      role,
-      avatar: filename,
-    });
-
-    if (req.file && error) {
-      fs.unlink(req.file.path, (e) => {
+    const { error, value } = usersValidation(req.body);
+    if (req.body.avatar && error) {
+      fs.unlink(req.body.avatar.path, (e) => {
         console.log(e ? e.message : "image deleted");
       });
       return res.status(400).send({ message: error.details[0].message });
     }
 
-    value.password = await bcrypt.hash(password, 10);
-
+    value.password = await bcrypt.hash(req.body.password, 10);
     const registered = await Users.create(value);
-
-    let otp = totp.generate(`${TOTP_KEY}${email}`);
+    let otp = totp.generate(`${TOTP_KEY}${req.body.email}`);
 
     await transporter.sendMail({
-      to: email,
+      to: req.body.email,
       subject: "One-time password",
       html: `This is an OTP to activate your account: <h1>${otp}</h1>`,
     });
 
-    res.status(200).send({
-      message:
-        "Registered successfully ✅. OTP sent to your email for activation.",
-      data: registered,
-    });
-
-    if (findUser) {
-      if (req.file) {
-        fs.unlink(req.file.path, (e) => {
-          if (e) {
-            console.log(e.message);
-          }
-        });
-      }
-      return res
-        .status(403)
-        .send({ message: "This account already exists ❗" });
-    }
+    res.status(200).send({message: "Registered successfully ✅. OTP sent to your email for activation.", data: registered});
   } catch (error) {
-    if (req.file) {
-      fs.unlink(req.file.path, (e) => {
-        if (e) {
-          console.log(e.message);
-        }
-      });
-    }
     res.status(500).send({ error_message: error.message });
   }
 }
@@ -266,9 +226,7 @@ async function update(req, res) {
     }
 
     let result = await Users.findByPk(id);
-    res
-      .status(200)
-      .send({ message: "User updated successfully", data: result });
+    res.status(200).send({data: result});
   } catch (error) {
     if (req.file) {
       fs.unlink(req.file.path, (e) => {
@@ -295,4 +253,4 @@ async function remove(req, res) {
   }
 }
 
-export { register, verifyOtp, login, refreshToken, findAll, update, remove };
+export { register, verifyOtp, login, findOne, findAll, update, remove };
