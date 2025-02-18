@@ -10,9 +10,8 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Op, where } from "sequelize";
 
-
 //Registering
-export async function register(req, res) {
+async function register(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -20,7 +19,7 @@ export async function register(req, res) {
 }
 
 //Verifying arrived otp
-export async function verifyOtp(req, res) {
+async function verifyOtp(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -28,7 +27,7 @@ export async function verifyOtp(req, res) {
 }
 
 // Login
-export async function login(req, res) {
+async function login(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -36,7 +35,7 @@ export async function login(req, res) {
 }
 
 //refreshToken
-export async function refreshToken(req, res) {
+async function refreshToken(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -44,7 +43,7 @@ export async function refreshToken(req, res) {
 }
 
 // Get All Users
-export async function getAll(req, res) {
+async function getAll(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -52,7 +51,7 @@ export async function getAll(req, res) {
 }
 
 // Get one User
-export async function getOne(req, res) {
+async function getOne(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -60,7 +59,7 @@ export async function getOne(req, res) {
 }
 
 // Update users
-export async function update(req, res) {
+async function update(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -68,9 +67,20 @@ export async function update(req, res) {
 }
 
 // Delete Users
-export async function remove(req, res) {
+async function remove(req, res) {
   try {
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 }
+
+export {
+  register,
+  verifyOtp,
+  login,
+  refreshToken,
+  getAll,
+  getOne,
+  update,
+  remove,
+};

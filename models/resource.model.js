@@ -4,6 +4,12 @@ import User from "./users.model.js";
 import ResourceCategory from "./resourceCategory.model.js";
 
 const Resource = sequelize.define("Resource", {
+  id: {
+    type: DataTypes.INTEGER, 
+    autoIncrement: true,
+    primaryKey: true,
+  },
+
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -13,12 +19,12 @@ const Resource = sequelize.define("Resource", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-
+  
   description: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-
+  
   image: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -30,14 +36,14 @@ const Resource = sequelize.define("Resource", {
   },
 
   createdBy: {
+    type: DataTypes.INTEGER,
     references: { model: User, key: "id" },
-    type: DataTypes.STRING,
     allowNull: false,
   },
-
+  
   categoryID: {
+    type: DataTypes.INTEGER,
     references: { model: ResourceCategory, key: "id" },
-    type: DataTypes.STRING,
     allowNull: false,
   },
 });
