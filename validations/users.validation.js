@@ -19,11 +19,13 @@ function usersValidationUpdate(data) {
     lastname: Joi.string().min(2),
     avatar: Joi.string(),
     email: Joi.string(),
-    phone: Joi.string().required(),
-    password: Joi.string().required(),
+    phone: Joi.string(),
+    password: Joi.string(), 
     role: Joi.string(),
   });
   return usersSchema.validate(data);
 }
 
+
 export { usersValidation, usersValidationUpdate };
+
