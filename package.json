@@ -1,27 +1,90 @@
 {
+  
   "name": "coursehunter",
+  
   "version": "1.0.0",
+  
   "main": "index.js",
+  
   "type": "module",
+  
   "scripts": {
-    "dev": "node --watch main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  
+    
+  "dev": "node --watch main.js",
+  
+    
+  "test": "echo \"Error: no test specified\" && exit 1"
+  
   },
+  
+  "repository": {
+  
+    
+  "type": "git",
+  
+    
+  "url": "git+https://github.com/nuriddinmahmud/CourseHunter.git"
+  
+  },
+  
   "keywords": [],
+  
   "author": "",
+  
   "license": "ISC",
+  
+  "bugs": {
+  
+    
+  "url": "https://github.com/nuriddinmahmud/CourseHunter/issues"
+  
+  },
+  
+  "homepage": "https://github.com/nuriddinmahmud/CourseHunter#readme",
+  
   "description": "",
+  
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.12.0",
-    "nodemailer": "^6.10.0",
-    "otplib": "^12.0.1",
-    "sequelize": "^6.37.5"
+  
+    
+  "bcrypt": "^5.1.1",
+  
+    
+  "cors": "^2.8.5",
+  
+    
+  "dotenv": "^16.4.7",
+  
+    
+  "express": "^4.21.2",
+  
+    
+  "joi": "^17.13.3",
+  
+    
+  "jsonwebtoken": "^9.0.2",
+  
+    
+  "multer": "^1.4.5-lts.1",
+  
+    
+  "mysql2": "^3.12.0",
+  
+    
+  "nodemailer": "^6.10.0",
+  
+    
+  "otplib": "^12.0.1",
+  
+    
+  "sequelize": "^6.37.5",
+  
+    
+  "swagger-jsdoc": "^6.2.8",
+  
+    
+  "swagger-ui-express": "^5.0.1"
+  
   }
 }

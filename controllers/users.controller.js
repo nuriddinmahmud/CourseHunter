@@ -1,5 +1,8 @@
 import Users from "../models/users.model.js";
-import { usersValidation, usersValidationUpdate } from "../validations/users.validation.js";
+import {
+  usersValidation,
+  usersValidationUpdate,
+} from "../validations/users.validation.js";
 import nodemailer from "nodemailer";
 import { totp } from "otplib";
 import bcrypt from "bcrypt";
@@ -24,9 +27,11 @@ totp.options = { step: 1800, digits: 6 };
 async function register(req, res) {
   try {
     const body = req.body;
-    let findUser = await Users.findOne({where: { email: body.email }});
-    if(findUser) {
-      return res.status(405).send({message: 'This account already exists ❗'});
+    let findUser = await Users.findOne({ where: { email: body.email } });
+    if (findUser) {
+      return res
+        .status(405)
+        .send({ message: "This account already exists ❗" });
     }
 
     const { error, value } = usersValidation(body);
@@ -35,7 +40,7 @@ async function register(req, res) {
         console.log(e ? e.message : "image deleted");
       });
       return res.status(400).send({ message: error.details[0].message });
-    };
+    }
 
     value.password = await bcrypt.hash(body.password, 10);
     const registered = await Users.create(value);
@@ -47,7 +52,13 @@ async function register(req, res) {
       html: `This is an OTP to activate your account: <h1>${otp}</h1>`,
     });
 
-    res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
+    res
+      .status(200)
+      .send({
+        message:
+          "Registered successfully ✅. We sent OTP to your email for activation.",
+        data: registered,
+      });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -70,7 +81,9 @@ async function verifyOtp(req, res) {
       await Users.update({ status: "active" }, { where: { email } });
     }
 
-    res.status(200).send({ message: "Your account has been activated successfully" });
+    res
+      .status(200)
+      .send({ message: "Your account has been activated successfully" });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -89,11 +102,21 @@ async function login(req, res) {
       return res.status(403).send({ message: "Account not activated ❗" });
     }
 
-    let refreshToken = await refreshTokenGenerate({ id: user.id, email: user.email, role: user.role });
+    let refreshToken = await refreshTokenGenerate({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
-    let accessToken = await accessTokenGenereate({ id: user.id, email: user.email, role: user.role });
+    let accessToken = await accessTokenGenereate({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     await user.update({ refreshToken });
-    res.status(200).send({ message: "Logged in successfully", access_token: accessToken });
+    res
+      .status(200)
+      .send({ message: "Logged in successfully", access_token: accessToken });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -101,17 +124,21 @@ async function login(req, res) {
 
 async function refreshToken(req, res) {
   try {
-      let checkEmail = await Users.findByPk(req.user.id);
-      let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
+    let checkEmail = await Users.findByPk(req.user.id);
+    let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
 
-      let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
-      if(id !== req.user.id) {
-          return res.status(405).send({message: 'Other token ❗'});
-      }
-      let accessToken = await accessTokenGenereate({id: checkEmail.id, email: checkEmail.email, role: checkEmail.role});
-      res.status(200).send({ accessToken });
+    let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
+    if (id !== req.user.id) {
+      return res.status(405).send({ message: "Other token ❗" });
+    }
+    let accessToken = await accessTokenGenereate({
+      id: checkEmail.id,
+      email: checkEmail.email,
+      role: checkEmail.role,
+    });
+    res.status(200).send({ accessToken });
   } catch (error) {
-      res.status(500).send({error_message: error.message});
+    res.status(500).send({ error_message: error.message });
   }
 }
 
@@ -139,14 +166,37 @@ async function findAll(req, res) {
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] })}
-
-    else if(role === "user") { 
-      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
-    }
-
-    else {
-      return res.status(403).send({message: 'Unauthorization user type ❗'});
+      findAllUsers = await Users.findAll({
+        where: { role: { [Op.in]: ["user", "ceo"] } },
+        attributes: [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "phone",
+          "role",
+          "avatar",
+          "status",
+        ],
+      });
+    } else if (role === "user") {
+      findAllUsers = await Users.findOne({
+        where: { role: { [Op.in]: ["user"] } },
+        attributes: [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "phone",
+          "role",
+          "avatar",
+          "status",
+        ],
+      });
+    } else {
+      return res.status(403).send({ message: "Unauthorization user type ❗" });
     }
 
     res.status(200).send({ data: findAllUsers });
@@ -218,7 +268,7 @@ async function update(req, res) {
     }
 
     let result = await Users.findByPk(id);
-    res.status(200).send({data: result});
+    res.status(200).send({ data: result });
   } catch (error) {
     if (req.file) {
       fs.unlink(req.file.path, (e) => {
@@ -228,7 +278,7 @@ async function update(req, res) {
     res.status(500).send({ error_message: error.message });
   }
 }
- 
+
 async function remove(req, res) {
   try {
     let { id } = req.params;
@@ -244,4 +294,13 @@ async function remove(req, res) {
   }
 }
 
-export { register, verifyOtp, login, refreshToken, findOne, findAll, update, remove };
+export {
+  register,
+  verifyOtp,
+  login,
+  refreshToken,
+  findOne,
+  findAll,
+  update,
+  remove,
+};

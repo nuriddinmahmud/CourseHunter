@@ -1,17 +1,20 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import sequelize from "./config/database.js";
-import mainRouter from "./routes/index.js";
+import cors from "cors";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import mainRoute from "./routes/index.js"; 
 
 dotenv.config();
-const PORT = process.env.PORT || 4005;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
-app.use(express.json());
-app.use("/api", mainRouter);
-app.use('/image', express.static('./uploads'));
 
+// JSON tan olish
+app.use(express.json());
+
+// CORS sozlamalari
 app.use(
   cors({
     origin: "*",
@@ -19,13 +22,90 @@ app.use(
   })
 );
 
+// Swagger hujjatlari uchun konfiguratsiya
+const swaggerDefinition = {
+  openapi: "3.0.0",
+  info: {
+    title: "CourseSale API",
+    version: "1.0.0",
+    description: "CourseSale loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
+
+  },
+  servers: [
+    {
+      url: `http://localhost:${PORT}/api`,
+      description: "Local server",
+    },
+  ],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
+  },
+  security: [
+    {
+      BearerAuth: [], // Tokenni tekshirish
+    },
+  ],
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ["./routes/*.js"], // Barcha route fayllarini Swaggerda ko'rsatish
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  swaggerOptions: {
+    authAction: {
+      BearerAuth: {
+        name: "Authorization",
+        schema: {
+          type: "apiKey",
+          in: "header",
+          name: "Authorization",
+        },
+        value: "Bearer <Your-Token-Here>"
+      }
+    }
+  }
+}));
+console.log(`📄 Swagger UI yuklandi: http://localhost:${PORT}/api-docs`);
+
+// API route'larni ulash
+app.use("/api", mainRoute);
+
+// Token autentifikatsiyasi uchun middleware
+const verifyToken = (req, res, next) => {
+  const token = req.header("Authorization");
+  if (!token) return res.status(401).send({ message: "Access Denied. No Token Provided" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(400).send({ message: "Invalid Token" });
+  }
+};
+
+// Barcha so'rovlar uchun tokenni tekshirish
+app.use(verifyToken); 
+
+// Serverni ishga tushirish
 async function bootstrap() {
   try {
     await sequelize.sync();
-    console.log("Connected to database successfully ✅");
-    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+    console.log("Connected to database");
+    app.listen(PORT, () => console.log(`Server ${PORT} portda ishlamoqda ✌️ | Swagger: http://localhost:${PORT}/api-docs`));
   } catch (error) {
-    console.log(error.message);
+    console.log("Database ulanishda xatolik:", error.message);
   }
 }
 
