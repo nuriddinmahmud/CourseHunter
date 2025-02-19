@@ -38,10 +38,10 @@ const Comment = sequelize.define("Comments", {
   },
 });
 
-Comment.hasMany(EducationalCentre, { foreignKey: "educationalCentreID" });
-EducationalCentre.belongsTo(Comment, { foreignKey: "educationalCentreID" });
+Comment.belongsTo(EducationalCentre, { foreignKey: "educationalCentreID" });
+EducationalCentre.hasMany(Comment, { foreignKey: "educationalCentreID" });
 
-Comment.hasMany(Users, { foreignKey: "userID" });
-Users.belongsTo(Comment, { foreignKey: "userID" });
+Users.hasMany(Comment, { foreignKey: "userID" });
+Comment.belongsTo(Users, { foreignKey: "userID" });
 
 export default Comment;

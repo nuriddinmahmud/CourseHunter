@@ -1,5 +1,8 @@
 import Users from "../models/users.model.js";
-import { usersValidation, usersValidationUpdate } from "../validations/users.validation.js";
+import {
+  usersValidation,
+  usersValidationUpdate,
+} from "../validations/users.validation.js";
 import nodemailer from "nodemailer";
 import { totp } from "otplib";
 import bcrypt from "bcrypt";
@@ -35,7 +38,7 @@ async function register(req, res) {
     const { error, value } = usersValidation(body);
     if (error) {
       return res.status(400).send({ message: error.details[0].message });
-    };
+    }
 
     value.password = await bcrypt.hash(body.password, 10);
     const registered = await Users.create(value);
@@ -70,7 +73,9 @@ async function verifyOtp(req, res) {
       await Users.update({ status: "active" }, { where: { email } });
     }
 
-    res.status(200).send({ message: "Your account has been activated successfully" });
+    res
+      .status(200)
+      .send({ message: "Your account has been activated successfully" });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -107,6 +112,8 @@ async function accessTokenGenereate(payload) {
 
 async function findAll(req, res) {
   try {
+    console.log(1);
+    
     let { role } = req.user;
     let findAllUsers = [];
 

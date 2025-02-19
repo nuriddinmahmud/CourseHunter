@@ -6,7 +6,7 @@ import {
 } from "../validations/field.validation.js";
 import { Op, where } from "sequelize";
 
-export const create = async (req, res) => {
+const create = async (req, res) => {
   try {
     const { error } = fieldValidation(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
@@ -18,7 +18,7 @@ export const create = async (req, res) => {
   }
 };
 
-export const getAll = async (req, res) => {
+const getAll = async (req, res) => {
   try {
     let { search, page, limit } = req.query;
     let whereClause = {};
@@ -48,7 +48,7 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const getOne = async (req, res) => {
+const getOne = async (req, res) => {
   try {
     const { id } = req.params;
     const field = await Field.findByPk(id, {
@@ -63,7 +63,7 @@ export const getOne = async (req, res) => {
   }
 };
 
-export const update = async (req, res) => {
+const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { error } = fieldValidationUpdate(req.body);
@@ -72,14 +72,14 @@ export const update = async (req, res) => {
     const field = await Field.findByPk(id);
     if (!field) return res.status(404).json({ message: "Field not found" });
 
-    await field.update(req.body, {where: {id}});
+    await field.update(req.body, { where: { id } });
     res.status(200).json(field);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-export const remove = async (req, res) => {
+const remove = async (req, res) => {
   try {
     const { id } = req.params;
     const field = await Field.findByPk(id);
@@ -91,3 +91,5 @@ export const remove = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export { getAll, getOne, create, update, remove }
