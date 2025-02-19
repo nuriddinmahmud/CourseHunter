@@ -3,7 +3,7 @@ import { create, getAll, getBySearch, getOne, getPaginatedComments, remove, sort
 
 const commentRouter = Router()
 
-commentRouter.get("/", getPaginatedComments)
+commentRouter.get("/with-pagination", getPaginatedComments)
 commentRouter.get("/sortByStar", sortByStar)
 commentRouter.get("/sortByCreatedDate", sortByCreatedDate)
 commentRouter.get("/", getAll)

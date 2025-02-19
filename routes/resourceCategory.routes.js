@@ -12,7 +12,7 @@ const ResourceCategoryRouter = expres.Router()
 ResourceCategoryRouter.post("/", create);
 ResourceCategoryRouter.get("/", getAll);
 ResourceCategoryRouter.get("/:id", getOne);
-ResourceCategoryRouter.put("/:id", update);
+ResourceCategoryRouter.patch("/:id", update);
 ResourceCategoryRouter.delete("/:id", remove);
 
 export default ResourceCategoryRouter;

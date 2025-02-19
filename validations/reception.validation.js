@@ -5,8 +5,9 @@ function receptionValidation(data) {
     userID: Joi.number().positive().required(),
     fieldID: Joi.number().positive().required(),
     branchID: Joi.number().positive().required(),
+    educationalCentreID: Joi.number().positive().required(),
   });
-  return receptionSchema.validate(data);
+  return receptionSchema.validate(data, {abortEarly: true});
 }
 
 function receptionValidationUpdate(data) {
@@ -14,8 +15,9 @@ function receptionValidationUpdate(data) {
     userID: Joi.number().positive(),
     fieldID: Joi.number().positive(),
     branchID: Joi.number().positive(),
+    educationalCentreID: Joi.number().positive(),
   });
-  return receptionSchema.validate(data);
+  return receptionSchema.validate(data, {abortEarly: true});
 }
 
 export { receptionValidation, receptionValidationUpdate };

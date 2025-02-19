@@ -8,7 +8,7 @@ function branchesValidation(data) {
     address: Joi.string().required(),
     regionID: Joi.number().positive().required(),
   });
-  return branchesSchema.validate(data);
+  return branchesSchema.validate(data, {abortEarly: true});
 }
 
 function branchesValidationUpdate(data) {
@@ -19,7 +19,7 @@ function branchesValidationUpdate(data) {
     address: Joi.string(),
     regionID: Joi.number().positive(),
   });
-  return branchesSchema.validate(data);
+  return branchesSchema.validate(data, {abortEarly: true});
 }
 
 export { branchesValidation, branchesValidationUpdate };

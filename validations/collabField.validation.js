@@ -5,7 +5,7 @@ function collabFieldValidation(data) {
     fieldID: Joi.number().positive().required(),
     educationalCenterID: Joi.number().positive().required(),
   });
-  return collabFieldSchema.validate(data);
+  return collabFieldSchema.validate(data, {abortEarly: true});
 }
 
 function collabFieldValidationUpdate(data) {
@@ -13,7 +13,7 @@ function collabFieldValidationUpdate(data) {
     fieldID: Joi.number().positive(),
     educationalCenterID: Joi.number().positive(),
   });
-  return collabFieldSchema.validate(data);
+  return collabFieldSchema.validate(data, {abortEarly: true});
 }
 
 export { collabFieldValidation, collabFieldValidationUpdate };

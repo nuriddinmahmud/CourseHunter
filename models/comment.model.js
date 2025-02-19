@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import EducationalCentre from "../models/educationalCenter.model.js";
-import User from "./users.model.js";
+import EducationalCentre from "./educationalCenter.model.js";
+import Users from "./users.model.js";
 
 const Comment = sequelize.define("Comment", {
   description: {
@@ -31,17 +31,17 @@ const Comment = sequelize.define("Comment", {
   userID: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: Users,
       key: "id",
     },
     allowNull: false,
   },
 });
 
-Comment.hasMany(EducationalCentre, { foreignKey: "educationalCentreID" });
-EducationalCentre.belongsTo(Comment, { foreignKey: "educationalCentreID" });
+Comment.belongsTo(EducationalCentre, { foreignKey: "educationalCentreID" });
+EducationalCentre.hasMany(Comment, { foreignKey: "educationalCentreID" });
 
-Comment.hasMany(User, { foreignKey: "userID" });
-User.belongsTo(Comment, { foreignKey: "userID" });
+Users.hasMany(Comment, { foreignKey: "userID" });
+Comment.belongsTo(Users, { foreignKey: "userID" });
 
 export default Comment;

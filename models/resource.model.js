@@ -1,15 +1,9 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import User from "./users.model.js";
 import ResourceCategory from "./resourceCategory.model.js";
+import Users from "./users.model.js";
 
 const Resource = sequelize.define("Resource", {
-  id: {
-    type: DataTypes.INTEGER, 
-    autoIncrement: true,
-    primaryKey: true,
-  },
-
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -37,7 +31,7 @@ const Resource = sequelize.define("Resource", {
 
   createdBy: {
     type: DataTypes.INTEGER,
-    references: { model: User, key: "id" },
+    references: { model: Users, key: "id" },
     allowNull: false,
   },
   
@@ -48,8 +42,8 @@ const Resource = sequelize.define("Resource", {
   },
 });
 
-Resource.hasMany(User, { foreignKey: "createdBy" });
-User.belongsTo(Resource, { foreignKey: "createdBy" });
+Resource.hasMany(Users, { foreignKey: "createdBy" });
+Users.belongsTo(Resource, { foreignKey: "createdBy" });
 
 ResourceCategory.hasMany(Resource, { foreignKey: "categoryID" });
 Resource.belongsTo(ResourceCategory, { foreignKey: "categoryID" });

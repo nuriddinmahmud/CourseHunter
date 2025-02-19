@@ -3,7 +3,7 @@ import { create, getAll, getBySearch, getOne, getPaginatedRegions, remove, sortB
 
 const regionRouter = Router()
 
-regionRouter.get("/", getPaginatedRegions)
+regionRouter.get("/with-pagination", getPaginatedRegions)
 regionRouter.get("/sortByName", sortByName)
 regionRouter.get("/", getAll)
 regionRouter.get("/:id", getOne)

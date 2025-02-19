@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import User from "./users.model.js";
 import EducationalCentre from "../models/educationalCenter.model.js";
+import Users from "./users.model.js";
 
 const Likes = sequelize.define("Likes", {
   userID: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: Users,
       key: "id",
     },
     allowNull: false,
@@ -23,8 +23,8 @@ const Likes = sequelize.define("Likes", {
   },
 });
 
-Likes.hasMany(User, { foreignKey: "userID" });
-User.belongsTo(Likes, { foreignKey: "userID" });
+Likes.hasMany(Users, { foreignKey: "userID" });
+Users.belongsTo(Likes, { foreignKey: "userID" });
 
 Likes.hasMany(EducationalCentre, { foreignKey: "educationalCentreID" });
 EducationalCentre.belongsTo(Likes, { foreignKey: "educationalCentreID" });

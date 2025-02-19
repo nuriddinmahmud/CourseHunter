@@ -12,7 +12,7 @@ const BranchRouter = express.Router();
 BranchRouter.post("/", create);
 BranchRouter.get("/", getAll);
 BranchRouter.get("/:id", getOne);
-BranchRouter.put("/:id", update);
+BranchRouter.patch("/:id", update);
 BranchRouter.delete("/:id", remove);
 
 export default BranchRouter;

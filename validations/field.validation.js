@@ -6,7 +6,7 @@ function fieldValidation(data) {
     image: Joi.string().required(),
     courseID: Joi.number().positive(),
   });
-  return fieldSchema.validate(data);
+  return fieldSchema.validate(data, {abortEarly: true});
 }
 
 function fieldValidationUpdate(data) {
@@ -15,7 +15,7 @@ function fieldValidationUpdate(data) {
     image: Joi.string(),
     courseID: Joi.number().positive(),
   });
-  return fieldSchema.validate(data);
+  return fieldSchema.validate(data, {abortEarly: true});
 }
 
 export { fieldValidation, fieldValidationUpdate };

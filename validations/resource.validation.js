@@ -10,7 +10,7 @@ function resourceValidation(data) {
     creatBy: Joi.number().positive().required(),
     categoryID: Joi.number().positive().required(),
   });
-  return resourceSchema.validate(data);
+  return resourceSchema.validate(data, {abortEarly: true});
 }
 
 function resourceValidationUpdate(data) {
@@ -21,9 +21,9 @@ function resourceValidationUpdate(data) {
     media: Joi.string(),
     createdAt: Joi.date(),
     creatBy: Joi.number().positive(),
-    categoryID: Joi.number().positive(),
+    categoryID: Joi.number(),
   });
-  return resourceSchema.validate(data);
+  return resourceSchema.validate(data, {abortEarly: true});
 }
 
 export { resourceValidation, resourceValidationUpdate };
