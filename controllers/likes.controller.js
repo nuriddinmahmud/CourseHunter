@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize"
 import EducationalCentre from "../models/educationalCenter.model.js"
 import Likes from "../models/likes.model.js"
 import User from "../models/users.model.js"
@@ -66,6 +67,27 @@ async function remove(req, res) {
     }
 }
 
+async function sortLikesCount(req, res) {
+    try {
+        const result = await Likes.findAll({
+            attributes: ['educationalCentreID',
+                [Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'likeCount']],
+            group: ['educationalCentreID'],
+            order: [[Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'DESC']]
+        });
+
+        const sortedLikes = result.map(item => ({
+            educationalCentreID: item.get('educationalCentreID'),
+            likeCount: item.get('likeCount')
+        }));
+
+        return res.json(sortedLikes);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 async function getBySearch(req, res) {
     try {
         let query = req.query
@@ -92,7 +114,6 @@ async function getBySearch(req, res) {
 
 async function sortByLikes(req, res) {
     try {
-        console.log(1);
         let { name } = req.query
         let likes = await Likes.findAll({
             order: [['name', name]]
@@ -104,4 +125,4 @@ async function sortByLikes(req, res) {
 }
 
 
-export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove , sortByLikes}
+export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove, sortByLikes, sortLikesCount }

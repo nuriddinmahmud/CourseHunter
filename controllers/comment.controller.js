@@ -127,4 +127,26 @@ async function sortByCreatedDate(req, res) {
     }
 }
 
-export { getAll, getBySearch, getOne, getPaginatedComments, create, update, remove, sortByStar, sortByCreatedDate }
+
+async function sortCommenstCount(req, res) {
+    try {
+        const result = await Comment.findAll({
+            attributes: ['educationalCentreID',
+                [Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'commentCount']],
+            group: ['educationalCentreID'],
+            order: [[Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'DESC']]
+        });
+
+        const sortedComments = result.map(item => ({
+            educationalCentreID: item.get('educationalCentreID'),
+            commentCount: item.get('commentCount')
+        }));
+
+        return res.json(sortedComments);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export { getAll, getBySearch, getOne, getPaginatedComments, create, update, remove, sortByStar, sortByCreatedDate, sortCommenstCount }
