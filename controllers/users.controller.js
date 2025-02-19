@@ -7,6 +7,9 @@ import fs from "fs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
+import EducationalCentre from "../models/educationalCenter.model.js";
+import path from 'path';
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
@@ -30,10 +33,7 @@ async function register(req, res) {
     }
 
     const { error, value } = usersValidation(body);
-    if (body.avatar && error) {
-      fs.unlink(body.avatar.path, (e) => {
-        console.log(e ? e.message : "image deleted");
-      });
+    if (error) {
       return res.status(400).send({ message: error.details[0].message });
     };
 
@@ -89,29 +89,10 @@ async function login(req, res) {
       return res.status(403).send({ message: "Account not activated ❗" });
     }
 
-    let refreshToken = await refreshTokenGenerate({ id: user.id, email: user.email, role: user.role });
-
     let accessToken = await accessTokenGenereate({ id: user.id, email: user.email, role: user.role });
-    await user.update({ refreshToken });
     res.status(200).send({ message: "Logged in successfully", access_token: accessToken });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
-  }
-}
-
-async function refreshToken(req, res) {
-  try {
-      let checkEmail = await Users.findByPk(req.user.id);
-      let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
-
-      let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
-      if(id !== req.user.id) {
-          return res.status(405).send({message: 'Other token ❗'});
-      }
-      let accessToken = await accessTokenGenereate({id: checkEmail.id, email: checkEmail.email, role: checkEmail.role});
-      res.status(200).send({ accessToken });
-  } catch (error) {
-      res.status(500).send({error_message: error.message});
   }
 }
 
@@ -124,27 +105,30 @@ async function accessTokenGenereate(payload) {
   }
 }
 
-async function refreshTokenGenerate(payload) {
-  try {
-    let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
-    return jwt.sign(payload, refreshSecret);
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
 async function findAll(req, res) {
   try {
     let { role } = req.user;
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] })}
-
-    else if(role === "user") { 
-      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
     }
 
+    else if(role === "user") { 
+      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+    }
+
+    else if (role === "ceo") {
+      const educationalCentre = await EducationalCentre.findOne({
+        where: { userID: req.user.id }
+      });
+
+      if (!educationalCentre) {
+        return res.status(404).send({ message: 'Educational Centre not found ❗' });
+      }
+
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user"] }, educationalCentreID: educationalCentre.id}, include: [{model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}]});
+    }
     else {
       return res.status(403).send({message: 'Unauthorization user type ❗'});
     }
@@ -160,26 +144,31 @@ async function findOne(req, res) {
     const { id } = req.params;
     const { role } = req.user;
 
-    let user = null;
+    let user = [];
 
     if (role === "admin") {
-      user = await Users.findOne({ where: { id } });
+      user = await Users.findOne({ where: { id, role: {[Op.in]: ["ceo", "user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+      if (!user) {
+        return res.status(404).send({ message: "User or Ceo not found ❗"});
+      }
+    }
+    
+    else if (role === "user") {
+      user = await Users.findOne({ where: { id, role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
       if (!user) {
         return res.status(404).send({ message: "User not found ❗" });
       }
-    } else if (role === "ceo") {
-      user = await Users.findOne({
-        where: { id, role: { [Op.in]: ["admin", "user"] } },
-      });
-      if (!user) {
-        return res.status(404).send({ message: "Admin or User not found ❗" });
+    }
+
+    else if(role === "ceo") {
+      let educationalCentre = await EducationalCentre.findOne({where: {userID: req.user.id}});
+      if(!educationalCentre) {
+        return res.status(404).send({message: 'Educational Centre not found ❗'});
       }
-    } else if (role === "user") {
-      user = await Users.findOne({ where: { id, role: "user" } });
-      if (!user) {
-        return res.status(404).send({ message: "User not found ❗" });
-      }
-    } else {
+      user = await Users.findOne({where: {id, role: {[Op.in]: ["user"]}}, educationalCentreID: educationalCentre.id });
+    }
+
+    else {
       return res.status(403).send({ message: "Unauthorized user type ❗" });
     }
 
@@ -192,13 +181,11 @@ async function findOne(req, res) {
 async function update(req, res) {
   try {
     let { id } = req.params;
-    let filename = req.file ? req.file.filename : null;
-    req.body.avatar = filename;
-
-    const { error, value } = usersValidationUpdate(req.body);
+    let body = req.body;
+    const { error, value } = usersValidationUpdate(body);
     if (error) {
-      if (req.file) {
-        fs.unlink(req.file.path, (e) => {
+      if (body.avatar) {
+        fs.unlink(body.avatar.path, (e) => {
           console.log(e ? e.message : "image deleted");
         });
       }
@@ -217,25 +204,30 @@ async function update(req, res) {
       return res.status(400).send({ message: "User not found ❗️" });
     }
 
-    let result = await Users.findByPk(id);
+    let result = await Users.findByPk(id, {attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
     res.status(200).send({data: result});
   } catch (error) {
-    if (req.file) {
-      fs.unlink(req.file.path, (e) => {
-        console.log(e ? e.message : "image deleted");
-      });
-    }
     res.status(500).send({ error_message: error.message });
   }
 }
- 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 async function remove(req, res) {
   try {
     let { id } = req.params;
-    let deletedUser = await Users.destroy({ where: { id } });
+    let find = await Users.findByPk(id);
+
+    let imagePath = path.join(__dirname, '../uploads', find.avatar);
+    let deletedUser = await Users.destroy({ where: { id, role: {[Op.in]: ["ceo", "user"]}}});
+
+    fs.unlink(imagePath, (e) => {
+      console.log(e ? e.message : 'image deleted');
+    });
 
     if (!deletedUser) {
-      return res.status(404).send({ message: "User not found ❗" });
+      return res.status(404).send({ message: " User not found ❗" });
     }
 
     res.status(200).send({ message: "User deleted successfully" });
@@ -244,4 +236,4 @@ async function remove(req, res) {
   }
 }
 
-export { register, verifyOtp, login, refreshToken, findOne, findAll, update, remove };
+export { register, verifyOtp, login, findOne, findAll, update, remove };
