@@ -1,9 +1,11 @@
 import Field from "../models/field.model.js";
 import Course from "../models/courses.model.js";
-import { fieldValidation, fieldValidationUpdate } from "../validations/field.validation.js";
-import { Op } from "sequelize";
+import {
+  fieldValidation,
+  fieldValidationUpdate,
+} from "../validations/field.validation.js";
+import { Op, where } from "sequelize";
 
-// CREATE
 export const create = async (req, res) => {
   try {
     const { error } = fieldValidation(req.body);
@@ -16,7 +18,6 @@ export const create = async (req, res) => {
   }
 };
 
-// READ (Get All) + Search + Pagination
 export const getAll = async (req, res) => {
   try {
     let { search, page, limit } = req.query;
@@ -31,7 +32,7 @@ export const getAll = async (req, res) => {
 
     const fields = await Field.findAndCountAll({
       where: whereClause,
-      include: [{ model: Course, attributes: ["id", "name"] }],
+      include: [{ model: Course, attributes: ["id", "name", "image", "type"] }],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
     });
@@ -40,19 +41,18 @@ export const getAll = async (req, res) => {
       total: fields.count,
       page: pageNumber,
       pageSize: pageSize,
-      data: fields.rows,
+      data: fields,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// READ (Get One)
 export const getOne = async (req, res) => {
   try {
     const { id } = req.params;
     const field = await Field.findByPk(id, {
-      include: [{ model: Course, attributes: ["id", "name"] }],
+      include: [{ model: Course }],
     });
 
     if (!field) return res.status(404).json({ message: "Field not found" });
@@ -63,7 +63,6 @@ export const getOne = async (req, res) => {
   }
 };
 
-// UPDATE
 export const update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,21 +72,20 @@ export const update = async (req, res) => {
     const field = await Field.findByPk(id);
     if (!field) return res.status(404).json({ message: "Field not found" });
 
-    await field.update(req.body);
+    await field.update(req.body, {where: {id}});
     res.status(200).json(field);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// DELETE
 export const remove = async (req, res) => {
   try {
     const { id } = req.params;
     const field = await Field.findByPk(id);
     if (!field) return res.status(404).json({ message: "Field not found" });
 
-    await field.destroy();
+    await field.destroy(id);
     res.status(200).json({ message: "Field deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

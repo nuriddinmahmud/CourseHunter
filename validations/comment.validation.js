@@ -8,18 +8,18 @@ function commentValidation(data){
         educationalCenterID: Joi.number().positive().required(),
         userID: Joi.number().positive().required(),
     });
-    return commentSchema.validate(data)
+    return commentSchema.validate(data, {abortEarly: true});
 }
 
 function commentValidationUpdate(data){
     const commentSchema = Joi.object({
         description: Joi.string().min(2),
-        star: Joi.number(),
+        star: Joi.number().positive(),
         createdAt: Joi.date(),
         educationalCenterID: Joi.number().positive(),
         userID: Joi.number().positive(),
     });
-    return commentSchema.validate(data)
+    return commentSchema.validate(data, {abortEarly: true});
 }
 
 export {commentValidation, commentValidationUpdate}

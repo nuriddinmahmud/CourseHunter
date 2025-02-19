@@ -1,8 +1,5 @@
 import Users from "../models/users.model.js";
-import {
-  usersValidation,
-  usersValidationUpdate,
-} from "../validations/users.validation.js";
+import { usersValidation, usersValidationUpdate } from "../validations/users.validation.js";
 import nodemailer from "nodemailer";
 import { totp } from "otplib";
 import bcrypt from "bcrypt";
@@ -26,43 +23,36 @@ totp.options = { step: 1800, digits: 6 };
 
 async function register(req, res) {
   try {
-    // const findUser = await Users.findOne({ where: body });
-    // if (findUser) {
-    //   if (findUser.avatar) {
-    //     fs.unlink(findUser.avatar.path, (e) => {
-    //       console.log(e ? e.message : "image deleted");
-    //     });
-    //   }
-    //   return res
-    //     .status(403)
-    //     .send({ message: "This account already exists ❗" });
-    // }
+    const body = req.body;
+    let findUser = await Users.findOne({where: { email: body.email }});
+    if(findUser) {
+      return res.status(405).send({message: 'This account already exists ❗'});
+    }
 
-    const { error, value } = usersValidation(req.body);
-    if (req.body.avatar && error) {
-      fs.unlink(req.body.avatar.path, (e) => {
+    const { error, value } = usersValidation(body);
+    if (body.avatar && error) {
+      fs.unlink(body.avatar.path, (e) => {
         console.log(e ? e.message : "image deleted");
       });
       return res.status(400).send({ message: error.details[0].message });
-    }
+    };
 
-    value.password = await bcrypt.hash(req.body.password, 10);
+    value.password = await bcrypt.hash(body.password, 10);
     const registered = await Users.create(value);
-    let otp = totp.generate(`${TOTP_KEY}${req.body.email}`);
 
+    let otp = totp.generate(`${TOTP_KEY}${body.email}`);
     await transporter.sendMail({
-      to: req.body.email,
+      to: body.email,
       subject: "One-time password",
       html: `This is an OTP to activate your account: <h1>${otp}</h1>`,
     });
 
-    res.status(200).send({message: "Registered successfully ✅. OTP sent to your email for activation.", data: registered});
+    res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
 }
 
-// verify Otp
 async function verifyOtp(req, res) {
   try {
     const { email, otp } = req.body;
@@ -80,15 +70,12 @@ async function verifyOtp(req, res) {
       await Users.update({ status: "active" }, { where: { email } });
     }
 
-    res
-      .status(200)
-      .send({ message: "Your account has been activated successfully" });
+    res.status(200).send({ message: "Your account has been activated successfully" });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
 }
 
-// Login
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -102,58 +89,64 @@ async function login(req, res) {
       return res.status(403).send({ message: "Account not activated ❗" });
     }
 
-    let accessToken = await accessTokenGenerate({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-    let refreshToken = await refreshTokenGenerate({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    let refreshToken = await refreshTokenGenerate({ id: user.id, email: user.email, role: user.role });
 
+    let accessToken = await accessTokenGenereate({ id: user.id, email: user.email, role: user.role });
     await user.update({ refreshToken });
-
-    res
-      .status(200)
-      .send({ message: "Logged in successfully", access_token: accessToken });
+    res.status(200).send({ message: "Logged in successfully", access_token: accessToken });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
 }
 
-// Generate
-async function accessTokenGenerate(payload) {
+async function refreshToken(req, res) {
   try {
-    let accessSecret = process.env.ACCESS_KEY || "accessKey";
-    return jwt.sign(payload, accessSecret, { expiresIn: "1h" });
+      let checkEmail = await Users.findByPk(req.user.id);
+      let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
+
+      let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
+      if(id !== req.user.id) {
+          return res.status(405).send({message: 'Other token ❗'});
+      }
+      let accessToken = await accessTokenGenereate({id: checkEmail.id, email: checkEmail.email, role: checkEmail.role});
+      res.status(200).send({ accessToken });
   } catch (error) {
-    console.log("JWT access token error:", error.message);
+      res.status(500).send({error_message: error.message});
   }
 }
 
-// Generate refresh token
-async function refreshTokenGenerate(payload) {
+async function accessTokenGenereate(payload) {
   try {
-    let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
-    return jwt.sign(payload, refreshSecret, { expiresIn: "7d" });
+    let accessSecret = process.env.ACCESS_KEY || "accessKey";
+    return jwt.sign(payload, accessSecret);
   } catch (error) {
     console.log(error.message);
   }
 }
 
-// Get All Users
+async function refreshTokenGenerate(payload) {
+  try {
+    let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
+    return jwt.sign(payload, refreshSecret);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 async function findAll(req, res) {
   try {
     let { role } = req.user;
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({
-        where: { role: { [Op.in]: ["ceo", "user"] } },
-        attributes: ["id", "firstName", "lastName", "email", "role", "status"],
-      });
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] })}
+
+    else if(role === "user") { 
+      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
+    }
+
+    else {
+      return res.status(403).send({message: 'Unauthorization user type ❗'});
     }
 
     res.status(200).send({ data: findAllUsers });
@@ -196,7 +189,6 @@ async function findOne(req, res) {
   }
 }
 
-// Update user
 async function update(req, res) {
   try {
     let { id } = req.params;
@@ -236,8 +228,7 @@ async function update(req, res) {
     res.status(500).send({ error_message: error.message });
   }
 }
-
-// Delete 
+ 
 async function remove(req, res) {
   try {
     let { id } = req.params;
@@ -253,4 +244,4 @@ async function remove(req, res) {
   }
 }
 
-export { register, verifyOtp, login, findOne, findAll, update, remove };
+export { register, verifyOtp, login, refreshToken, findOne, findAll, update, remove };

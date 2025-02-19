@@ -3,8 +3,7 @@ import Region from "../models/regions.model.js";
 import { branchesValidation, branchesValidationUpdate } from "../validations/branches.validation.js";
 import { Op } from "sequelize";
 
-// CREATE
-export const create = async (req, res) => {
+const create = async (req, res) => {
   try {
     const { error } = branchesValidation(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
@@ -16,8 +15,7 @@ export const create = async (req, res) => {
   }
 };
 
-// READ (Get All) + Search + Pagination
-export const getAll = async (req, res) => {
+const getAll = async (req, res) => {
   try {
     let { search, page, limit, regionID } = req.query;
     let whereClause = {};
@@ -34,7 +32,7 @@ export const getAll = async (req, res) => {
 
     const branches = await Branch.findAndCountAll({
       where: whereClause,
-      include: [{ model: Region, attributes: ["id", "name"] }],
+      include: [{ model: Region }],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
     });
@@ -50,8 +48,7 @@ export const getAll = async (req, res) => {
   }
 };
 
-// READ (Get One)
-export const getOne = async (req, res) => {
+const getOne = async (req, res) => {
   try {
     const { id } = req.params;
     const branch = await Branch.findByPk(id, {
@@ -66,8 +63,7 @@ export const getOne = async (req, res) => {
   }
 };
 
-// UPDATE
-export const update = async (req, res) => {
+const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { error } = branchesValidationUpdate(req.body);
@@ -83,8 +79,7 @@ export const update = async (req, res) => {
   }
 };
 
-// DELETE
-export const remove = async (req, res) => {
+const remove = async (req, res) => {
   try {
     const { id } = req.params;
     const branch = await Branch.findByPk(id);
@@ -96,3 +91,5 @@ export const remove = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export { create, getAll, getOne, update, remove }

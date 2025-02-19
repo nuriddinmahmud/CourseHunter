@@ -9,7 +9,7 @@ function educationCenterValidation(data) {
     regionID: Joi.number().positive().required(),
     phone: Joi.string().min(13).required(),
   });
-  return educationCenterSchema.validate(data);
+  return educationCenterSchema.validate(data, {abortEarly: true});
 }
 
 function educationalCenterValidationUpdate(data) {
@@ -21,7 +21,7 @@ function educationalCenterValidationUpdate(data) {
     regionID: Joi.number().positive(),
     phone: Joi.string().min(13),
   });
-  return educationCenterSchema.validate(data);
+  return educationCenterSchema.validate(data, {abortEarly: true});
 }
 
 export { educationCenterValidation, educationalCenterValidationUpdate };

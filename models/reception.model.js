@@ -2,7 +2,8 @@ import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import Branch from "../models/branches.model.js";
 import Field from "../models/field.model.js";
-import User from "./users.model.js";
+import Users from "./users.model.js";
+import EducationalCentre from "./educationalCenter.model.js";
 
 const Reception = sequelize.define("Reception", {
   fieldID: {
@@ -17,7 +18,7 @@ const Reception = sequelize.define("Reception", {
   userID: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: Users,
       key: "id",
     },
     allowNull: false,
@@ -31,15 +32,27 @@ const Reception = sequelize.define("Reception", {
     },
     allowNull: false,
   },
+
+  educationalCentreID: {
+    type: DataTypes.INTEGER,
+    references: {
+        model: EducationalCentre,
+        key: 'id',
+    },
+    allowNull: false,
+  }
 });
 
-Field.hasMany(Reception, { foreignKey: "fieldID" });
 Reception.belongsTo(Field, { foreignKey: "fieldID" });
+Field.hasMany(Reception, { foreignKey: "fieldID" });
 
-User.hasMany(Reception, { foreignKey: "userID" });
-Reception.belongsTo(User, { foreignKey: "userID" });
+Users.hasMany(Reception, { foreignKey: "userID" });
+Reception.belongsTo(Users, { foreignKey: "userID" });
 
 Branch.hasOne(Reception, { foreignKey: "branchID" });
 Reception.belongsTo(Branch, { foreignKey: "branchID" });
+
+EducationalCentre.hasMany(Reception, {foreignKey: 'educationalCentreID'});
+Reception.belongsTo(EducationalCentre, {foreignKey: 'educationalCentreID'});
 
 export default Reception;

@@ -4,31 +4,31 @@ import {
   resourceCategoryValidationUpdate,
 } from "../validations/resourceCategory.validation.js";
 
-// CREATE
-export const create = async (req, res) => {
+const create = async (req, res) => {
   try {
     const { error } = resourceCategoryValidation(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     const newCategory = await ResourceCategory.create(req.body);
-    res.status(200).send({data: newCategory});
+    res.status(200).send({ data: newCategory });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
 
-// READ (Get All)
-export const getAll = async (req, res) => {
+const getAll = async (req, res) => {
   try {
     const categories = await ResourceCategory.findAll();
-    res.status(200).json(categories);
+    if(!categories.length) {
+        return res.status(400).send({messsage: 'ResourceCategories are empty ❗'});
+    }
+    res.status(200).send({data: categories});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// READ (Get One)
-export const getOne = async (req, res) => {
+const getOne = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await ResourceCategory.findByPk(id);
@@ -42,8 +42,7 @@ export const getOne = async (req, res) => {
   }
 };
 
-// UPDATE
-export const update = async (req, res) => {
+const update = async (req, res) => {
   try {
     const { id } = req.params;
     const { error } = resourceCategoryValidationUpdate(req.body);
@@ -60,8 +59,7 @@ export const update = async (req, res) => {
   }
 };
 
-// DELETE
-export const remove = async (req, res) => {
+const remove = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await ResourceCategory.findByPk(id);
@@ -74,3 +72,5 @@ export const remove = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export { getAll, getOne, create, update, remove };

@@ -33,7 +33,7 @@ const Branch = sequelize.define("Branch", {
   },
 });
 
-Branch.hasMany(Region, { foreignKey: "regionID" });
-Region.belongsTo(Branch, { foreignKey: "regionID" });
+Branch.belongsTo(Region, { foreignKey: "regionID" });
+Region.hasMany(Branch, { foreignKey: "regionID" });
 
 export default Branch;

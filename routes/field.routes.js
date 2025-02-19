@@ -12,7 +12,7 @@ const FieldRouter = express.Router();
 FieldRouter.post("/", create);
 FieldRouter.get("/", getAll);
 FieldRouter.get("/:id", getOne);
-FieldRouter.put("/:id", update);
+FieldRouter.patch("/:id", update);
 FieldRouter.delete("/:id", remove);
 
 export default FieldRouter;

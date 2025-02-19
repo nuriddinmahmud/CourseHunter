@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import User from "./users.model.js";
 import Region from "../models/regions.model.js";
+import Users from "./users.model.js";
 
 const EducationalCentre = sequelize.define("EducationalCentre", {
   name: {
@@ -22,7 +22,7 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
   userID: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: Users,
       key: "id",
     },
     allowNull: false,
@@ -43,10 +43,11 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
   },
 });
 
-EducationalCentre.hasMany(User, { foreignKey: "userID" });
-User.belongsTo(EducationalCentre, { foreignKey: "userID" });
+//CEO
+EducationalCentre.belongsTo(Users, { foreignKey: "userID" });
+Users.hasMany(EducationalCentre, { foreignKey: "userID" });
 
-EducationalCentre.hasOne(Region, { foreignKey: "regionID" });
-Region.belongsTo(EducationalCentre, { foreignKey: "regionID" });
+EducationalCentre.belongsTo(Region, { foreignKey: "regionID" });
+Region.hasMany(EducationalCentre, { foreignKey: "regionID" });
 
 export default EducationalCentre;

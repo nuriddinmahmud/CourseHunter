@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { create } from "../controllers/collabField.controller.js";
+// import { Router } from "express";
+// import { create } from "../controllers/collabField.controller.js";
 
-const CollabFieldRoute = Router();
+// const CollabFieldRoute = Router();
 
-CollabFieldRoute.post('/', create);
+// CollabFieldRoute.post('/', create);
 
-export default CollabFieldRoute;
+// export default CollabFieldRoute;
