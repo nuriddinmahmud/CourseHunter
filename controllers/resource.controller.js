@@ -2,7 +2,7 @@ import Resource from '../models/resource.model.js';
 
 async function findAll(req, res) {
     try {
-
+        
     } catch (error) {
         res.status(500).send({error_message: error.message});
     }
