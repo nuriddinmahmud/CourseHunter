@@ -1,39 +1,39 @@
-import EducationalCentre from "../models/educationalCenter.model.js";
-import Users from "../models/users.model.js";
-import {
-  commentValidation,
-  commentValidationUpdate,
-} from "../validations/comment.validation.js";
+// import EducationalCentre from "../models/educationalCenter.model.js";
+// import Users from "../models/users.model.js";
+// import {
+//   commentValidation,
+//   commentValidationUpdate,
+// } from "../validations/comment.validation.js";
 
-async function getPaginatedComments(req, res) {
-  try {
-    let { page, limit } = req.query; 
-    let comments = await Comment.findAll(
-      {
-        offset: (+page - 1) * +limit,
-        limit: +limit,
-      },
-      { include: [{ model: EducationalCentre }, { model: Users }] }
-    );
-    res.status(200).send({ data: comments });
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-}
+// async function getPaginatedComments(req, res) {
+//   try {
+//     let { page, limit } = req.query;
+//     let comments = await Comment.findAll(
+//       {
+//         offset: (+page - 1) * +limit,
+//         limit: +limit,
+//       },
+//       { include: [{ model: EducationalCentre }, { model: Users }] }
+//     );
+//     res.status(200).send({ data: comments });
+//   } catch (error) {
+//     res.status(400).send(error.message);
+//   }
+// }
 
-async function getAll(req, res) {
-  try {
-    let comments = await Comment.findAll({
-      include: [{ model: EducationalCentre }, { model: Users }],
-    });
-    if (!comments.length) {
-      return res.status(401).send({ msg: "Not found!" });
-    }
-    res.status(200).send({ data: comments });
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-}
+// async function getAll(req, res) {
+//   try {
+//     let comments = await Comment.findAll({
+//       include: [{ model: EducationalCentre }, { model: Users }],
+//     });
+//     if (!comments.length) {
+//       return res.status(401).send({ msg: "Not found!" });
+//     }
+//     res.status(200).send({ data: comments });
+//   } catch (error) {
+//     res.status(400).send(error.message);
+//   }
+// }
 
 async function getOne(req, res) {
   try {
@@ -50,19 +50,19 @@ async function getOne(req, res) {
   }
 }
 
-async function create(req, res) {
-  try {
-    let body = req.body;
-    let { error } = commentValidation(body);
-    if (error) {
-      return res.status(400).send(error.details[0].message);
-    }
-    let newComment = await Comment.create(body);
-    res.status(200).send(newComment);
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-}
+// async function create(req, res) {
+//   try {
+//     let body = req.body;
+//     let { error } = commentValidation(body);
+//     if (error) {
+//       return res.status(400).send(error.details[0].message);
+//     }
+//     let newComment = await Comment.create(body);
+//     res.status(200).send(newComment);
+//   } catch (error) {
+//     res.status(400).send(error.message);
+//   }
+// }
 
 async function update(req, res) {
   try {
@@ -131,29 +131,29 @@ async function sortByStar(req, res) {
   }
 }
 
-async function sortByCreatedDate(req, res) {
-  try {
-    let { date } = req.query;
-    let comments = await Comment.findAll(
-      {
-        order: [["createdAt", date]],
-      },
-      { include: [{ model: EducationalCentre }, { model: Users }] }
-    );
-    res.status(200).send({ data: comments });
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-}
+// async function sortByCreatedDate(req, res) {
+//   try {
+//     let { date } = req.query;
+//     let comments = await Comment.findAll(
+//       {
+//         order: [["createdAt", date]],
+//       },
+//       { include: [{ model: EducationalCentre }, { model: Users }] }
+//     );
+//     res.status(200).send({ data: comments });
+//   } catch (error) {
+//     res.status(400).send(error.message);
+//   }
+// }
 
-export {
-  getAll,
-  getBySearch,
-  getOne,
-  getPaginatedComments,
-  create,
-  update,
-  remove,
-  sortByStar,
-  sortByCreatedDate,
-};
+// export {
+//   getAll,
+//   getBySearch,
+//   getOne,
+//   getPaginatedComments,
+//   create,
+//   update,
+//   remove,
+//   sortByStar,
+//   sortByCreatedDate,
+// };

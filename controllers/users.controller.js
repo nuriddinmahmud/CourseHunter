@@ -27,11 +27,9 @@ totp.options = { step: 1800, digits: 6 };
 async function register(req, res) {
   try {
     const body = req.body;
-    let findUser = await Users.findOne({ where: { email: body.email } });
-    if (findUser) {
-      return res
-        .status(405)
-        .send({ message: "This account already exists ❗" });
+    let findUser = await Users.findOne({where: { email: body.email }});
+    if(findUser) {
+      return res.status(405).send({message: 'This account already exists ❗'});
     }
 
     const { error, value } = usersValidation(body);
@@ -52,13 +50,7 @@ async function register(req, res) {
       html: `This is an OTP to activate your account: <h1>${otp}</h1>`,
     });
 
-    res
-      .status(200)
-      .send({
-        message:
-          "Registered successfully ✅. We sent OTP to your email for activation.",
-        data: registered,
-      });
+    res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -127,16 +119,12 @@ async function refreshToken(req, res) {
     let checkEmail = await Users.findByPk(req.user.id);
     let refreshSecret = process.env.REFRESH_KEY || "refreshKey";
 
-    let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
-    if (id !== req.user.id) {
-      return res.status(405).send({ message: "Other token ❗" });
-    }
-    let accessToken = await accessTokenGenereate({
-      id: checkEmail.id,
-      email: checkEmail.email,
-      role: checkEmail.role,
-    });
-    res.status(200).send({ accessToken });
+      let { id } = jwt.verify(checkEmail.refreshToken, refreshSecret);
+      if(id !== req.user.id) {
+          return res.status(405).send({message: 'Other token ❗'});
+      }
+      let accessToken = await accessTokenGenereate({id: checkEmail.id, email: checkEmail.email, role: checkEmail.role});
+      res.status(200).send({ accessToken });
   } catch (error) {
     res.status(500).send({ error_message: error.message });
   }
@@ -162,41 +150,20 @@ async function refreshTokenGenerate(payload) {
 
 async function findAll(req, res) {
   try {
+    console.log(1);
+    
     let { role } = req.user;
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({
-        where: { role: { [Op.in]: ["user", "ceo"] } },
-        attributes: [
-          "id",
-          "firstName",
-          "lastName",
-          "email",
-          "password",
-          "phone",
-          "role",
-          "avatar",
-          "status",
-        ],
-      });
-    } else if (role === "user") {
-      findAllUsers = await Users.findOne({
-        where: { role: { [Op.in]: ["user"] } },
-        attributes: [
-          "id",
-          "firstName",
-          "lastName",
-          "email",
-          "password",
-          "phone",
-          "role",
-          "avatar",
-          "status",
-        ],
-      });
-    } else {
-      return res.status(403).send({ message: "Unauthorization user type ❗" });
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] })}
+
+    else if(role === "user") { 
+      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
+    }
+
+    else {
+      return res.status(403).send({message: 'Unauthorization user type ❗'});
     }
 
     res.status(200).send({ data: findAllUsers });
