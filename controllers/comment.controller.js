@@ -4,7 +4,8 @@ import {
   commentValidation,
   commentValidationUpdate,
 } from "../validations/comment.validation.js";
-import Comment from '../models/comment.model.js';
+import Comment from "../models/comment.model.js"
+import { Sequelize } from "sequelize"
 
 async function getPaginatedComments(req, res) {
   try {
@@ -25,7 +26,9 @@ async function getPaginatedComments(req, res) {
 async function getAll(req, res) {
   try {
     let comments = await Comment.findAll({
-      include: [{ model: EducationalCentre }, { model: Users }],
+      include: [{ model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
+        model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]
+      }]
     });
     if (!comments.length) {
       return res.status(401).send({ msg: "Not found!" });
@@ -147,14 +150,35 @@ async function sortByCreatedDate(req, res) {
   }
 }
 
-export {
-  getAll,
-  getBySearch,
-  getOne,
-  getPaginatedComments,
-  create,
-  update,
-  remove,
-  sortByStar,
-  sortByCreatedDate,
-};
+
+async function sortCommenstCount(req, res) {
+  try {
+    const result = await Comment.findAll({
+      attributes: ['Comment.educationalCentreID',
+        [Sequelize.fn('COUNT', Sequelize.col('Comment.educationalCentreID')), 'commentCount']],
+      include: [
+        {
+          attributes: ['name', 'address', 'image'],
+          model: EducationalCentre,
+        }
+      ],
+      group: ['Comment.educationalCentreID'],
+      order: [[Sequelize.fn('COUNT', Sequelize.col('Comment.educationalCentreID')), 'DESC']]
+    });
+
+    const sortedComments = result.map(item => ({
+      educationalCentreID: item.get('Comment.educationalCentreID'),
+      educationalCentreName: item.EducationalCentre ? item.EducationalCentre.name : null,
+      educationalCentreAddress: item.EducationalCentre ? item.EducationalCentre.address : null,
+      educationalCentreImage: item.EducationalCentre ? item.EducationalCentre.image : null,
+      commentCount: item.get('commentCount')
+    }));
+
+    return res.json(sortedComments);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export { getAll, getBySearch, getOne, getPaginatedComments, create, update, remove, sortByStar, sortByCreatedDate, sortCommenstCount }

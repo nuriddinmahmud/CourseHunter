@@ -1,4 +1,3 @@
-import { where } from 'sequelize';
 import Resource from '../models/resource.model.js';
 import ResourceCategory from '../models/resourceCategory.model.js';
 import {resourceValidation, resourceValidationUpdate } from '../validations/resource.validation.js';

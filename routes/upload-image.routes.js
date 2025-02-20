@@ -7,7 +7,7 @@ const uploadImageRoute = Router();
  * @swagger
  * /upload-image:
  *   post:
- *     summary: Faylni yuklash (single image)
+ *     summary: Upload a file (single image)
  *     tags: [Uploads]
  *     requestBody:
  *       required: true
@@ -21,7 +21,7 @@ const uploadImageRoute = Router();
  *                 format: binary
  *     responses:
  *       200:
- *         description: Rasm muvaffaqiyatli yuklandi
+ *         description: Image uploaded successfully
  *         content:
  *           application/json:
  *             schema:
@@ -29,10 +29,11 @@ const uploadImageRoute = Router();
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: Image uploaded successfully
  *                 image:
  *                   type: string
  *       404:
- *         description: Rasm topilmadi
+ *         description: Image not found
  */
 uploadImageRoute.post("/", upload.single("avatar"), (req, res) => {
   if (!req.file) {

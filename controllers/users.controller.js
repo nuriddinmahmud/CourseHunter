@@ -10,7 +10,6 @@ import fs from "fs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
-import EducationalCentre from "../models/educationalCenter.model.js";
 import path from 'path';
 import { fileURLToPath } from "url";
 
@@ -133,17 +132,6 @@ async function findAll(req, res) {
     else if(role === "user") { 
       findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
     }
-
-    else if (role === "ceo") {
-      const educationalCentre = await EducationalCentre.findOne({
-        where: { userID: req.user.id }
-    });
-
-    if (!educationalCentre) {
-      return res.status(404).send({ message: 'Educational Centre not found ❗' });
-    }
-    findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user"] }, educationalCentreID: educationalCentre.id}, include: [{model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}]});
-    }
     
     else {
       return res.status(403).send({message: 'Unauthorization user type ❗'});
@@ -176,14 +164,6 @@ async function findOne(req, res) {
       }
     }
 
-    else if(role === "ceo") {
-      let educationalCentre = await EducationalCentre.findOne({where: {userID: req.user.id}});
-      if(!educationalCentre) {
-        return res.status(404).send({message: 'Educational Centre not found ❗'});
-      }
-      user = await Users.findOne({where: {id, role: {[Op.in]: ["user"]}}, educationalCentreID: educationalCentre.id });
-    }
-
     else {
       return res.status(403).send({ message: "Unauthorized user type ❗" });
     }
@@ -200,11 +180,6 @@ async function update(req, res) {
     let body = req.body;
     const { error, value } = usersValidationUpdate(body);
     if (error) {
-      if (body.avatar) {
-        fs.unlink(body.avatar.path, (e) => {
-          console.log(e ? e.message : "image deleted");
-        });
-      }
       return res.status(400).send({ message: error.details[0].message });
     }
 
