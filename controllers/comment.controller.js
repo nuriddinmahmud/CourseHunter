@@ -25,7 +25,6 @@ async function getPaginatedComments(req, res) {
 
 async function getAll(req, res) {
   try {
-    console.log(1);
     let comments = await Comment.findAll({
       include: [{ model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
         model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]
@@ -38,7 +37,7 @@ async function getAll(req, res) {
   } catch (error) {
     res.status(400).send(error.message);
   }
-}
+}  
 
 async function getOne(req, res) {
   try {
@@ -58,11 +57,11 @@ async function getOne(req, res) {
 async function create(req, res) {
   try {
     let body = req.body;
-    let { error, value } = commentValidation(body);
+    let { error } = commentValidation(body);
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
-    let newComment = await Comment.create(value);
+    let newComment = await Comment.create(body);
     res.status(200).send(newComment);
   } catch (error) {
     res.status(400).send(error.message);

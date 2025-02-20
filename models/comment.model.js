@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import EducationalCentre from "./educationalCenter.model.js";
+import EducationalCentre from "../models/educationalCenter.model.js";
 import Users from "./users.model.js";
 
-const Comment = sequelize.define("Comment", {
+const Comment = sequelize.define("Comments", {
   description: {
     type: DataTypes.STRING,
     allowNull: false,

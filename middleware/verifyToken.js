@@ -1,16 +1,16 @@
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const accessKey = process.env.ACCESS_KEY || "accessKey";
 
 function verifyToken(req, res, next) {
-   try {
-    let header = req.header('Authorization').split(" ");
+  try {
+    let header = req.header("Authorization").split(" ");
     let [_, token] = header;
 
-    if(!token) {
-        return res.status(401).send({message: 'Token not found ❗'});
+    if (!token) {
+      return res.status(401).send({ message: "Token not found ❗" });
     }
 
     let accessSecret = accessKey;
@@ -18,9 +18,9 @@ function verifyToken(req, res, next) {
     req.user = data;
 
     next();
-   } catch (error) {
-    res.status(500).send({error_message: error.message});
-   }
+  } catch (error) {
+    res.status(500).send({ error_message: error.message });
+  }
 }
 
 export default verifyToken;
