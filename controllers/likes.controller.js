@@ -10,6 +10,8 @@ async function getPaginatedLikes(req, res) {
         let likes = await Likes.findAll({
             offset: (+page - 1) * +limit,
             limit: +limit,
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] }, 
+            { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         res.status(200).send({ data: likes });
     } catch (error) {
@@ -20,7 +22,8 @@ async function getPaginatedLikes(req, res) {
 async function getAll(req, res) {
     try {
         let likes = await Likes.findAll({
-            include: [{ model: Users }, { model: EducationalCentre }],
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] }, 
+            { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         if (!likes.length) {
             return res.status(404).send({ msg: "Not found!" });
@@ -35,7 +38,8 @@ async function getOne(req, res) {
     try {
         let { id } = req.params;
         let like = await Likes.findByPk(id, {
-            include: [{ model: Users }, { model: EducationalCentre }],
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] }, 
+            { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         if (!like) {
             return res.status(404).send({ msg: "Not found!" });
@@ -54,7 +58,7 @@ async function create(req, res) {
             return res.status(400).send(error.details[0].message);
         }
         let newLike = await Likes.create(body);
-        res.status(200).send(newLike);
+        res.status(200).send({data: newLike});
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -116,7 +120,8 @@ async function getBySearch(req, res) {
         });
         let likes = await Likes.findAll(
             { where: newQuery },
-            { include: [{ model: Users }, { model: EducationalCentre }] }
+            { include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] }, 
+            { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }], }
         );
         if (!likes.length) {
             return res.status(400).send({ msg: "Not found!!!" });
@@ -127,18 +132,4 @@ async function getBySearch(req, res) {
     }
 }
 
-
-async function sortByLikes(req, res) {
-    try {
-        let { name } = req.query
-        let likes = await Likes.findAll({
-            order: [['name', name]]
-        })
-        res.status(200).send({ data: likes })
-    } catch (error) {
-        res.status(400).send(error.message)
-    }
-}
-
-
-export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove, sortByLikes, sortLikesCount };
+export { getAll, getOne, getPaginatedLikes, getBySearch, create, remove, sortLikesCount };
