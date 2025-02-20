@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove, sortByLikes, sortLikesCount } from "../controllers/likes.controller.js";
+import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove, sortLikesCount } from "../controllers/likes.controller.js";
 
 /**
  * @swagger
@@ -188,22 +188,6 @@ likesRouter.delete("/:id", remove);
  */
 likesRouter.get("/sortLikesCount", sortLikesCount);
 
-/**
- * @swagger
- * /likes/sortByLikes:
- *   get:
- *     summary: Sort likes by name
- *     tags: [Likes]
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Name to sort likes by
- *     responses:
- *       200:
- *         description: Sorted likes
- */
-likesRouter.get("/sortByLikes", sortByLikes);
+
 
 export default likesRouter;

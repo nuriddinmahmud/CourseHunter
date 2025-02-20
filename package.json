@@ -4,7 +4,7 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon main.js",
+    "dev": "node --watch main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
