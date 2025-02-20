@@ -28,7 +28,7 @@ const swaggerDefinition = {
   info: {
     title: "CourseHunter(Exam) API",
     version: "1.0.0",
-    description: "CourseHunter loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
+    description: "Documentations for Project CourseHunter (Nuriddin, Abdulboriy, Barchinoy)",
 
   },
   servers: [
