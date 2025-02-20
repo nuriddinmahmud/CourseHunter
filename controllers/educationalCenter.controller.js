@@ -14,25 +14,26 @@ async function getPaginatedEducationalCentres(req, res) {
         offset: (+page - 1) * +limit,
         limit: +limit,
       },
-      { include: [{ model: Users }, { model: Region }] }
+      { include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region }] }
     );
     res.status(200).send({ data: educationalCenters });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 
 async function getAll(req, res) {
   try {
     let educationalCenters = await EducationalCentre.findAll({
-      include: [{ model: Users }, { model: Region }],
+      attributes: { exclude: ["educationalCentreID"] },
+      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region }],
     });
     if (!educationalCenters.length) {
-      return res.status(401).send({ msg: "Not found!" });
+      return res.status(200).send({ msg: "Not found!" });
     }
     res.status(200).send({ data: educationalCenters });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 
@@ -40,14 +41,15 @@ async function getOne(req, res) {
   try {
     let { id } = req.params;
     let educationalCenter = await EducationalCentre.findByPk(id, {
-      include: [{ model: Users }, { model: Region }],
+      attributes: { exclude: ["educationalCentreID"] },
+      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]}, { model: Region, attributes: ['name'] }],
     });
     if (!educationalCenter) {
-      return res.status(401).send({ msg: "Not found!" });
+      return res.status(200).send({ msg: "Not found!" });
     }
     res.status(200).send({ data: educationalCenter });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 
@@ -67,7 +69,7 @@ async function create(req, res) {
       res.status(405).send({ message: 'Not permission. Only Ceo and Admin can create Educational Centre' });
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send({message: error.message});
   }
 }
 
@@ -87,7 +89,7 @@ async function update(req, res) {
       res.status(405).send({ message: 'Not permission. Only Ceo and Admin can update Educational Centre' });
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 
@@ -103,7 +105,7 @@ async function remove(req, res) {
       res.status(405).send({ message: 'Not permission. Only Ceo and Admin can delete Educational Centre' });
     }
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 
@@ -131,7 +133,7 @@ async function getBySearch(req, res) {
     }
     res.status(200).send({ data: educationalCenters });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send(error.message);
   }
 }
 

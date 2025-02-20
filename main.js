@@ -22,81 +22,81 @@ app.use(
   })
 );
 
-// Swagger hujjatlari uchun konfiguratsiya
-const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "CourseHunter(Exam) API",
-    version: "1.0.0",
-    description: "Documentations for Project CourseHunter (Nuriddin, Abdulboriy, Barchinoy)",
+// // Swagger hujjatlari uchun konfiguratsiya
+// const swaggerDefinition = {
+//   openapi: "3.0.0",
+//   info: {
+//     title: "CourseHunter(Exam) API",
+//     version: "1.0.0",
+//     description: "Documentations for Project CourseHunter (Nuriddin, Abdulboriy, Barchinoy)",
 
-  },
-  servers: [
-    {
-      url: `http://localhost:${PORT}/api`,
-      description: "Local server",
-    },
-  ],
-  components: {
-    securitySchemes: {
-      BearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-      },
-    },
-  },
-  security: [
-    {
-      BearerAuth: [], // Tokenni tekshirish
-    },
-  ],
-};
+//   },
+//   servers: [
+//     {
+//       url: `http://localhost:${PORT}/api`,
+//       description: "Local server",
+//     },
+//   ],
+//   components: {
+//     securitySchemes: {
+//       BearerAuth: {
+//         type: "http",
+//         scheme: "bearer",
+//         bearerFormat: "JWT",
+//       },
+//     },
+//   },
+//   security: [
+//     {
+//       BearerAuth: [], // Tokenni tekshirish
+//     },
+//   ],
+// };
 
-const options = {
-  swaggerDefinition,
-  apis: ["./routes/*.js"], // Barcha route fayllarini Swaggerda ko'rsatish
-};
+// const options = {
+//   swaggerDefinition,
+//   apis: ["./routes/*.js"], // Barcha route fayllarini Swaggerda ko'rsatish
+// };
 
-const swaggerSpec = swaggerJSDoc(options);
+// const swaggerSpec = swaggerJSDoc(options);
 
-// Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  swaggerOptions: {
-    authAction: {
-      BearerAuth: {
-        name: "Authorization",
-        schema: {
-          type: "apiKey",
-          in: "header",
-          name: "Authorization",
-        },
-        value: "Bearer <Your-Token-Here>"
-      }
-    }
-  }
-}));
-console.log(`📄 Swagger UI yuklandi: http://localhost:${PORT}/api-docs`);
+// // Swagger UI
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+//   swaggerOptions: {
+//     authAction: {
+//       BearerAuth: {
+//         name: "Authorization",
+//         schema: {
+//           type: "apiKey",
+//           in: "header",
+//           name: "Authorization",
+//         },
+//         value: "Bearer <Your-Token-Here>"
+//       }
+//     }
+//   }
+// }));
+// console.log(`📄 Swagger UI yuklandi: http://localhost:${PORT}/api-docs`);
 
-// API route'larni ulash
+// // API route'larni ulash
 app.use("/api", mainRoute);
 
-// Token autentifikatsiyasi uchun middleware
-const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).send({ message: "Access Denied. No Token Provided" });
+// // Token autentifikatsiyasi uchun middleware
+// const verifyToken = (req, res, next) => {
+//   const token = req.header("Authorization");
+//   if (!token) return res.status(401).send({ message: "Access Denied. No Token Provided" });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(400).send({ message: "Invalid Token" });
-  }
-};
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     res.status(400).send({ message: "Invalid Token" });
+//   }
+// };
 
-// Barcha so'rovlar uchun tokenni tekshirish
-app.use(verifyToken); 
+// // Barcha so'rovlar uchun tokenni tekshirish
+// app.use(verifyToken); 
 
 // Serverni ishga tushirish
 async function bootstrap() {
