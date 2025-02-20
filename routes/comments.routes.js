@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, getAll, getBySearch, getOne, getPaginatedComments, remove, sortByCreatedDate, sortByStar, update } from "../controllers/comment.controller.js";
+import { create, getAll, getBySearch, getOne, getPaginatedComments, remove, sortByCreatedDate, sortByStar, sortCommenstCount, update } from "../controllers/comment.controller.js";
 
 /**
  * @swagger

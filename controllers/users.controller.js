@@ -112,6 +112,8 @@ async function accessTokenGenereate(payload) {
 
 async function findAll(req, res) {
   try {
+    console.log(1);
+
     let { role } = req.user;
     let findAllUsers = [];
 

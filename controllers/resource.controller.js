@@ -4,12 +4,13 @@ import {resourceValidation, resourceValidationUpdate } from '../validations/reso
 async function findAll(req, res) {
     try {
     } catch (error) {
-        res.status(500).send({error_message: error.message});
+        res.status(500).send({ error_message: error.message });
     }
 }
 
 async function create(req, res) {
     try {
+
         const body = req.body;
         const { error, value } = resourceValidation(body);
         if(error) {
@@ -18,31 +19,31 @@ async function create(req, res) {
         const createResources = await Resource.create(value);
         res.status(200).send({message: 'Resource created successfully', data: createResources});
     } catch (error) {
-        res.status(500).send({error_message: error.message});
+        res.status(500).send({ error_message: error.message });
     }
 }
 
 async function findOne(req, res) {
     try {
-        
+
     } catch (error) {
-        res.status(500).send({error_message: error.message});
+        res.status(500).send({ error_message: error.message });
     }
 }
 
 async function update(req, res) {
     try {
-        
+
     } catch (error) {
-        res.status(500).send({error_message: error.message});
+        res.status(500).send({ error_message: error.message });
     }
 }
 
 async function remove(req, res) {
     try {
-        
+
     } catch (error) {
-        res.status(500).send({error_message: error.message});
+        res.status(500).send({ error_message: error.message });
     }
 }
 
