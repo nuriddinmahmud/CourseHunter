@@ -23,8 +23,8 @@ const Likes = sequelize.define("Likes", {
   },
 });
 
-Likes.hasMany(Users, { foreignKey: "userID" });
-Users.belongsTo(Likes, { foreignKey: "userID" });
+Likes.belongsTo(Users, { foreignKey: "userID" });
+Users.hasMany(Likes, { foreignKey: "userID" });
 
 Likes.hasMany(EducationalCentre, { foreignKey: "educationalCentreID" });
 EducationalCentre.belongsTo(Likes, { foreignKey: "educationalCentreID" });

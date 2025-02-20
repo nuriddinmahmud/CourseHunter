@@ -26,9 +26,9 @@ app.use(
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "CourseSale API",
+    title: "CourseHunter API",
     version: "1.0.0",
-    description: "CourseSale loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
+    description: "CourseHunter loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
 
   },
   servers: [
@@ -82,21 +82,21 @@ console.log(`📄 Swagger UI yuklandi: http://localhost:${PORT}/api-docs`);
 app.use("/api", mainRoute);
 
 // Token autentifikatsiyasi uchun middleware
-const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).send({ message: "Access Denied. No Token Provided" });
+// const verifyToken = (req, res, next) => {
+//   const token = req.header("Authorization");
+//   if (!token) return res.status(401).send({ message: "Access Denied. No Token Provided" });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(400).send({ message: "Invalid Token" });
-  }
-};
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     res.status(400).send({ message: "Invalid Token" });
+//   }
+// };
 
 // Barcha so'rovlar uchun tokenni tekshirish
-app.use(verifyToken); 
+// app.use(verifyToken); 
 
 // Serverni ishga tushirish
 async function bootstrap() {

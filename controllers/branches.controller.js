@@ -5,13 +5,15 @@ import { Op } from "sequelize";
 
 const create = async (req, res) => {
   try {
-    const { error } = branchesValidation(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { error, value } = branchesValidation(req.body);
+    if (error) { 
+      return res.status(400).json({ error: error.details[0].message });
+    }
 
-    const newBranch = await Branch.create(req.body);
-    res.status(201).json(newBranch);
+    const newBranch = await Branch.create(value);
+    res.status(200).send({message: "Branch created sucessfully", data: newBranch});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 

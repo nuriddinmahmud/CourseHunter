@@ -7,15 +7,18 @@ import {
   update,
   remove,
   findOne,
+  promoteToAdmin,
 } from "../controllers/users.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import checkRole from "../middleware/rolePolice.js";
 import selfPolice from '../middleware/selfPolice.js';
+
 const UserRouter = express.Router();
 
 UserRouter.post("/register", register);
 UserRouter.post("/verify-otp", verifyOtp);
 UserRouter.post("/login", login);
+UserRouter.patch('/promoteToAdmin/:id', verifyToken, selfPolice(["admin"]), promoteToAdmin);
 UserRouter.get("/", verifyToken, checkRole(["admin", "ceo", "user"]), findAll);
 UserRouter.get("/:id", verifyToken, checkRole(["admin", "ceo", "user"]), findOne);
 UserRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update);

@@ -38,8 +38,8 @@ const Comment = sequelize.define("Comments", {
   },
 });
 
-Comment.belongsTo(EducationalCentre, { foreignKey: "educationalCentreID" });
 EducationalCentre.hasMany(Comment, { foreignKey: "educationalCentreID" });
+Comment.belongsTo(EducationalCentre, { foreignKey: "educationalCentreID" });
 
 Users.hasMany(Comment, { foreignKey: "userID" });
 Comment.belongsTo(Users, { foreignKey: "userID" });

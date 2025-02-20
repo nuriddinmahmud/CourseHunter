@@ -52,7 +52,7 @@ async function register(req, res) {
 
     res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(500).send({ error_message: `xatolk: ${error.message}`});
   }
 }
 
@@ -110,6 +110,17 @@ async function accessTokenGenereate(payload) {
   }
 }
 
+async function promoteToAdmin(req, res) {
+  try {
+      const role = "admin"
+      let { id } = req.params;
+      await Users.update({ role }, { where: { id } })
+      res.status(200).send({ message: "Updated successfully" })
+  } catch (error) {
+      res.status(500).send({error_message: error.message});
+  }
+}
+
 async function findAll(req, res) {
   try {
     let { role } = req.user;
@@ -126,14 +137,14 @@ async function findAll(req, res) {
     else if (role === "ceo") {
       const educationalCentre = await EducationalCentre.findOne({
         where: { userID: req.user.id }
-      });
+    });
 
-      if (!educationalCentre) {
-        return res.status(404).send({ message: 'Educational Centre not found ❗' });
-      }
-
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user"] }, educationalCentreID: educationalCentre.id}, include: [{model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}]});
+    if (!educationalCentre) {
+      return res.status(404).send({ message: 'Educational Centre not found ❗' });
     }
+    findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user"] }, educationalCentreID: educationalCentre.id}, include: [{model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}]});
+    }
+    
     else {
       return res.status(403).send({message: 'Unauthorization user type ❗'});
     }
@@ -241,4 +252,4 @@ async function remove(req, res) {
   }
 }
 
-export { register, verifyOtp, login, findOne, findAll, update, remove };
+export { register, verifyOtp, login, findOne, findAll, update, remove, promoteToAdmin };
