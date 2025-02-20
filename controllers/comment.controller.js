@@ -5,7 +5,7 @@ import {
   commentValidationUpdate,
 } from "../validations/comment.validation.js";
 import Comment from "../models/comment.model.js"
-
+import { Sequelize } from "sequelize"
 
 async function getPaginatedComments(req, res) {
   try {
@@ -27,7 +27,7 @@ async function getAll(req, res) {
   try {
     console.log(1);
     let comments = await Comment.findAll({
-      include: [{ model: EducationalCentre, attributes: ['id','name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
+      include: [{ model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
         model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]
       }]
     });
@@ -155,14 +155,23 @@ async function sortByCreatedDate(req, res) {
 async function sortCommenstCount(req, res) {
   try {
     const result = await Comment.findAll({
-      attributes: ['educationalCentreID',
-        [Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'commentCount']],
-      group: ['educationalCentreID'],
-      order: [[Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'DESC']]
+      attributes: ['Comment.educationalCentreID',
+        [Sequelize.fn('COUNT', Sequelize.col('Comment.educationalCentreID')), 'commentCount']],
+      include: [
+        {
+          attributes: ['name', 'address', 'image'],
+          model: EducationalCentre,
+        }
+      ],
+      group: ['Comment.educationalCentreID'],
+      order: [[Sequelize.fn('COUNT', Sequelize.col('Comment.educationalCentreID')), 'DESC']]
     });
 
     const sortedComments = result.map(item => ({
-      educationalCentreID: item.get('educationalCentreID'),
+      educationalCentreID: item.get('Comment.educationalCentreID'),
+      educationalCentreName: item.EducationalCentre ? item.EducationalCentre.name : null,
+      educationalCentreAddress: item.EducationalCentre ? item.EducationalCentre.address : null,
+      educationalCentreImage: item.EducationalCentre ? item.EducationalCentre.image : null,
       commentCount: item.get('commentCount')
     }));
 

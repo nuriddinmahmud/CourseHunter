@@ -19,10 +19,10 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   try {
     const categories = await ResourceCategory.findAll();
-    if(!categories.length) {
-        return res.status(400).send({messsage: 'ResourceCategories are empty ❗'});
+    if (!categories.length) {
+      return res.status(400).send({ messsage: 'ResourceCategories are empty ❗' });
     }
-    res.status(200).send({data: categories});
+    res.status(200).send({ data: categories });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

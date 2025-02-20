@@ -59,12 +59,12 @@ async function create(req, res) {
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
-    
-    if(role === "ceo" || role == "admin") {
-        let newEducationalCenter = await EducationalCentre.create(value);
-        res.status(200).send({message: "Created successfully✅", data: newEducationalCenter});
+
+    if (role === "ceo" || role == "admin") {
+      let newEducationalCenter = await EducationalCentre.create(value);
+      res.status(200).send({ message: "Created successfully✅", data: newEducationalCenter });
     } else {
-        res.status(405).send({message: 'Not permission. Only Ceo and Admin can create Educational Centre'});
+      res.status(405).send({ message: 'Not permission. Only Ceo and Admin can create Educational Centre' });
     }
   } catch (error) {
     res.status(400).send(error.message);
@@ -80,11 +80,11 @@ async function update(req, res) {
     if (error) {
       res.status(400).send(error.details[0].message);
     }
-    if(role == "admin" || role == "ceo") {
+    if (role == "admin" || role == "ceo") {
       await EducationalCentre.update(value, { where: { id } });
       res.status(200).json({ message: "Successfully updated!!!" });
     } else {
-      res.status(405).send({message: 'Not permission. Only Ceo and Admin can update Educational Centre'});
+      res.status(405).send({ message: 'Not permission. Only Ceo and Admin can update Educational Centre' });
     }
   } catch (error) {
     res.status(400).send(error.message);
@@ -95,12 +95,12 @@ async function remove(req, res) {
   try {
     let { id } = req.params;
     let { role } = req.user;
-    
-    if(role == "admin" || role == "ceo") {
+
+    if (role == "admin" || role == "ceo") {
       await EducationalCentre.destroy({ where: { id } });
       res.status(200).json({ msg: "Successfully deleted!" });
     } else {
-      res.status(405).send({message: 'Not permission. Only Ceo and Admin can delete Educational Centre'});
+      res.status(405).send({ message: 'Not permission. Only Ceo and Admin can delete Educational Centre' });
     }
   } catch (error) {
     res.status(400).send(error.message);
@@ -121,7 +121,7 @@ async function getBySearch(req, res) {
         return;
       }
     });
-    
+
     let educationalCenters = await EducationalCentre.findAll(
       { where: newQuery },
       { include: [{ model: Users }, { model: Region }] }

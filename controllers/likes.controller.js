@@ -74,14 +74,23 @@ async function remove(req, res) {
 async function sortLikesCount(req, res) {
     try {
         const result = await Likes.findAll({
-            attributes: ['educationalCentreID',
-                [Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'likeCount']],
-            group: ['educationalCentreID'],
-            order: [[Sequelize.fn('COUNT', Sequelize.col('educationalCentreID')), 'DESC']]
+            attributes: ['Likes.educationalCentreID',
+                [Sequelize.fn('COUNT', Sequelize.col('Likes.educationalCentreID')), 'likeCount']],
+            include: [
+                {
+                    attributes: ['name', 'address', 'image'],
+                    model: EducationalCentre,
+                }
+            ],
+            group: ['Likes.educationalCentreID'],
+            order: [[Sequelize.fn('COUNT', Sequelize.col('Likes.educationalCentreID')), 'DESC']]
         });
 
         const sortedLikes = result.map(item => ({
-            educationalCentreID: item.get('educationalCentreID'),
+            educationalCentreID: item.get('Likes.educationalCentreID'),
+            educationalCentreName: item.EducationalCentre ? item.EducationalCentre.name : null,
+            educationalCentreAddress: item.EducationalCentre ? item.EducationalCentre.address : null,
+            educationalCentreImage: item.EducationalCentre ? item.EducationalCentre.image : null,
             likeCount: item.get('likeCount')
         }));
 
