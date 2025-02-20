@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize";
+import { DataTypes } from "sequelize"; 
 import sequelize from "../config/database.js";
 import EducationalCentre from "../models/educationalCenter.model.js";
 import Users from "./users.model.js";

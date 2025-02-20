@@ -26,9 +26,9 @@ app.use(
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "CourseSale API",
+    title: "CourseHunter(Exam) API",
     version: "1.0.0",
-    description: "CourseSale loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
+    description: "CourseHunter loyihasi uchun Swagger hujjatlari (Nuriddin, Abdulboriy, Barchinoy)",
 
   },
   servers: [
