@@ -9,6 +9,7 @@ import {
   findOne,
   promoteToAdmin,
   myEducationalCentres,
+  myInfo,
 } from "../controllers/users.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import checkRole from "../middleware/rolePolice.js";
@@ -140,7 +141,9 @@ UserRouter.post("/login", login);
  *       403:
  *         description: "Unauthorized access"
  */
-UserRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["admin"]), promoteToAdmin);
+UserRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["Admin"]), promoteToAdmin);
+
+UserRouter.get('/myInfo', verifyToken, checkRole(["Admin", "Ceo", "User"]), myInfo);
 
 /**
  * @swagger
@@ -155,7 +158,7 @@ UserRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["admin"]), prom
  *       403:
  *         description: "Unauthorized access"
  */
-UserRouter.get("/", verifyToken, checkRole(["admin", "user"]), findAll);
+UserRouter.get("/", verifyToken, checkRole(["Admin", "User"]), findAll);
 
 /**
  * @swagger
@@ -178,7 +181,7 @@ UserRouter.get("/", verifyToken, checkRole(["admin", "user"]), findAll);
  *       404:
  *         description: "User not found"
  */
-UserRouter.get("/:id", verifyToken, checkRole(["admin", "user"]), findOne);
+UserRouter.get("/:id", verifyToken, checkRole(["Admin", "User"]), findOne);
 
 /**
  * @swagger
@@ -201,7 +204,7 @@ UserRouter.get("/:id", verifyToken, checkRole(["admin", "user"]), findOne);
  *       404:
  *         description: "User not found"
  */
-UserRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update);
+UserRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
 
 /**
  * @swagger
@@ -224,6 +227,6 @@ UserRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update);
  *       404:
  *         description: "User not found"
  */
-UserRouter.delete("/:id", verifyToken, selfPolice(["admin"]), remove);
+UserRouter.delete("/:id", verifyToken, selfPolice(["Admin"]), remove);
 
 export default UserRouter;
