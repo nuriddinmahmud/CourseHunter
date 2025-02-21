@@ -34,7 +34,7 @@ const Comment = sequelize.define("Comments", {
       model: Users,
       key: "id",
     },
-    allowNull: false,
+    allowNull: true,
   },
 });
 

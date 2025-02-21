@@ -6,7 +6,6 @@ function commentValidation(data){
         star: Joi.number().required(),
         createdAt: Joi.date(),
         educationalCentreID: Joi.number().positive().required(),
-        userID: Joi.number().positive().required(),
     });
     return commentSchema.validate(data, {abortEarly: true});
 }

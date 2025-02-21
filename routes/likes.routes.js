@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove,  sortLikesCount } from "../controllers/likes.controller.js";
 
+const likesRouter = Router();
+
 /**
  * @swagger
  * tags:
@@ -47,7 +49,8 @@ import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove,  sortLi
  *       500:
  *         description: Internal server error
  */
-const likesRouter = Router();
+
+likesRouter.post("/", create)
 
 /**
  * @swagger
