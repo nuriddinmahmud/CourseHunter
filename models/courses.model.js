@@ -13,7 +13,7 @@ const Course = sequelize.define("Course", {
   },
 
   type: {
-    type: DataTypes.ENUM("jobs", "subjects"),
+    type: DataTypes.ENUM("Jobs", "Subjects"),
     allowNull: false,
   },
 });

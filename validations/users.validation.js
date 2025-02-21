@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export function usersValidation(data) {
+function usersValidation(data) {
   const Users = Joi.object({
     firstName: Joi.string().required().max(25).min(2),
     lastName: Joi.string().required().max(25).min(2),
@@ -14,7 +14,7 @@ export function usersValidation(data) {
   return Users.validate(data, {abortEarly: true});
 }
 
-export function usersValidationUpdate(data) {
+function usersValidationUpdate(data) {
   const Users = Joi.object({
     firstName: Joi.string().min(2).max(25).optional(),
     lastName: Joi.string().min(2).max(50).optional(),
@@ -27,3 +27,5 @@ export function usersValidationUpdate(data) {
   });
   return Users.validate(data, {abortEarly: true});
 }
+
+export {usersValidation, usersValidationUpdate}

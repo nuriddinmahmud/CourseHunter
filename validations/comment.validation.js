@@ -6,7 +6,6 @@ function commentValidation(data){
         star: Joi.number().required(),
         createdAt: Joi.date(),
         educationalCentreID: Joi.number().positive().required(),
-        userID: Joi.number().positive().required(),
     });
     return commentSchema.validate(data, {abortEarly: true});
 }
@@ -17,7 +16,6 @@ function commentValidationUpdate(data){
         star: Joi.number().positive(),
         createdAt: Joi.date(),
         educationalCentreID: Joi.number().positive(),
-        userID: Joi.number().positive(),
     });
     return commentSchema.validate(data, {abortEarly: true});
 }

@@ -6,6 +6,8 @@ import {
   update,
   remove,
 } from "../controllers/field.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import checkRole from "../middleware/rolePolice.js";
 
 const FieldRouter = express.Router();
 
@@ -37,7 +39,7 @@ const FieldRouter = express.Router();
  *       400:
  *         description: Validation error
  */
-FieldRouter.post("/", create);
+FieldRouter.post("/", verifyToken, checkRole(["Admin", 'Ceo']), create);
 
 /**
  * @swagger
@@ -165,7 +167,7 @@ FieldRouter.get("/:id", getOne);
  *       500:
  *         description: Server error
  */
-FieldRouter.patch("/:id", update);
+FieldRouter.patch("/:id", checkRole(["Admin", 'Ceo']), update);
 
 /**
  * @swagger
@@ -188,6 +190,6 @@ FieldRouter.patch("/:id", update);
  *       500:
  *         description: Server error
  */
-FieldRouter.delete("/:id", remove);
+FieldRouter.delete("/:id", checkRole(["Admin", 'Ceo']), remove);
 
 export default FieldRouter;

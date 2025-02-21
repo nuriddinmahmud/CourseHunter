@@ -6,8 +6,8 @@ import {
   findAll,
   update,
   remove,
-  findOne,
-  promoteToAdmin,
+ promoteToAdmin,
+ findOne,
   myEducationalCentres,
   myInfo,
 } from "../controllers/users.controller.js";

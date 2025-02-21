@@ -5,7 +5,6 @@ function educationCenterValidation(data) {
     name: Joi.string().min(2).required(),
     image: Joi.string().required(),
     address: Joi.string().required(),
-    userID: Joi.number().positive().required(),
     regionID: Joi.number().positive().required(),
     phone: Joi.string().min(13).required(),
   });
@@ -17,7 +16,6 @@ function educationalCenterValidationUpdate(data) {
     name: Joi.string().min(2),
     image: Joi.string(),
     address: Joi.string(),
-    userId: Joi.number().positive(),
     regionID: Joi.number().positive(),
     phone: Joi.string().min(13),
   });

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { create, getAll, getBySearch, getOne, getPaginatedComments, remove, sortByCreatedDate, sortByStar, sortCommenstCount, update } from "../controllers/comment.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
-import selfPolice from "../middleware/selfPolice.js";
 
 const commentRouter = Router();
 
@@ -10,6 +9,55 @@ const commentRouter = Router();
  * tags:
  *   name: Comments
  */
+
+/**
+ * @swagger
+ * /comments:
+ *   post:
+ *     summary: Create a new comment
+ *     tags: [Comments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description:
+ *                 type: string
+ *               star:
+ *                 type: number
+ *               createdAt:
+ *                 type: string
+ *               educationalCentreID:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Created comment successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     description:
+ *                       type: string
+ *                     star:
+ *                       type: number
+ *                     educationalCentreID:
+ *                       type: number
+ *       400:
+ *         description: Invalid input data
+ *       500:
+ *         description: Internal server error
+ */
+commentRouter.post("/", verifyToken, create)
+
 /**
  * @swagger
  * /comments/with-pagination:
@@ -43,6 +91,7 @@ const commentRouter = Router();
  *         description: Invalid query parameters
  */
 commentRouter.get("/with-pagination", getPaginatedComments);
+
 /**
  * @swagger
  * /comments/sortByStar:
@@ -140,56 +189,6 @@ commentRouter.get("/:id", getOne);
  */
 commentRouter.get("/getSearch", getBySearch);
 
-commentRouter.get('/sortCommenstCount', sortCommenstCount);
-
-/**
- * @swagger
- * /comments:
- *   post:
- *     summary: Create a new comment
- *     tags: [Comments]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               description:
- *                 type: string
- *               star:
- *                 type: number
- *               educationalCentreID:
- *                 type: number
- *               userID:
- *                 type: number
- *     responses:
- *       200:
- *         description: Comment created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Created comment successfully
- *                 data:
- *                   type: object
- *                   properties:
- *                     description:
- *                       type: string
- *                     star:
- *                       type: number
- *                     educationalCentreID:
- *                       type: number
- *       400:
- *         description: Invalid input data
- *       500:
- *         description: Internal server error
- */
-commentRouter.post("/", verifyToken, selfPolice(["user"]), create);
-
 /**
  * @swagger
  * /comments/{id}:
@@ -216,8 +215,6 @@ commentRouter.post("/", verifyToken, selfPolice(["user"]), create);
  *                 type: number
  *               educationalCentreID:
  *                 type: number
- *               userID:
- *                 type: number
  *     responses:
  *       200:
  *         description: Comment updated successfully
@@ -226,7 +223,7 @@ commentRouter.post("/", verifyToken, selfPolice(["user"]), create);
  *       404:
  *         description: Comment not found
  */
-commentRouter.patch("/:id", verifyToken, selfPolice(["user"]), update);
+commentRouter.patch("/:id", verifyToken, update);
 
 /**
  * @swagger
@@ -247,6 +244,6 @@ commentRouter.patch("/:id", verifyToken, selfPolice(["user"]), update);
  *       404:
  *         description: Comment not found
  */
-commentRouter.delete("/:id", verifyToken, selfPolice(["user"]), remove)
+commentRouter.delete("/:id", verifyToken, remove);
 
 export default commentRouter;

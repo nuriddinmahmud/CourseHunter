@@ -27,25 +27,23 @@ async function getAll(req, res) {
   try {
     let comments = await Comment.findAll({
       include: [{ model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
-        model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]
+        model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]
       }]
     });
     if (!comments.length) {
-      return res.status(404).send({ msg: "Not found!" });
+      return res.status(401).send({ msg: "Not found!" });
     }
     res.status(200).send({ data: comments });
   } catch (error) {
     res.status(400).send(error.message);
   }
-}  
+}
 
 async function getOne(req, res) {
   try {
     let { id } = req.params;
     let comment = await Comment.findByPk(id, {
-      include: [{ model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }, {
-        model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]
-      }]
+      include: [{ model: EducationalCentre }, { model: Users }],
     });
     if (!comment) {
       return res.status(401).send({ msg: "Not found!" });
@@ -58,13 +56,19 @@ async function getOne(req, res) {
 
 async function create(req, res) {
   try {
+    let userID = req.user.id
+
     let body = req.body;
     let { error } = commentValidation(body);
+
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
-    let newComment = await Comment.create(body);
-    res.status(200).send(newComment);
+
+    let newComment = await Comment.create({
+      ...body, userID
+    });
+    res.status(200).send({ data: newComment });
   } catch (error) {
     res.status(400).send(error.message);
   }

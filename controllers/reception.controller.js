@@ -57,11 +57,13 @@ async function findAll(req, res) {
 async function create(req, res) {
   try {
     let body = req.body;
+    let userID = req.user.id
+
     const { error, value } = receptionValidation(body);
     if (error) {
       return res.status(400).send({ message: error.details[0].message });
     }
-    let createReceptions = await Reception.create(value);
+    let createReceptions = await Reception.create({...value, userID});
     res.status(200).send({
       message: "Reception created successfully",
       data: createReceptions,
@@ -76,10 +78,10 @@ async function findOne(req, res) {
     let { id } = req.params;
     const findOneReception = await Reception.findByPk(id, {
       include: [
-        { model: Field },
-        { model: Users },
+        { model: Field, attributes: {exclude: ['fieldID']} },
+        { model: Users,  attributes: {exclude: ['password', 'status']} },
         { model: Branch },
-        { model: EducationalCentre },
+        { model: EducationalCentre, attributes: {exclude: ['educationalCentreID']} },
       ],
     });
     if (!findOneReception) {

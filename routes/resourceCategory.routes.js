@@ -37,7 +37,7 @@ const ResourceCategoryRouter = express.Router();
  *       400:
  *         description: Validation error
  */
-ResourceCategoryRouter.post("/", verifyToken, selfPolice(["admin"]), create);
+ResourceCategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
 
 /**
  * @swagger
@@ -112,7 +112,7 @@ ResourceCategoryRouter.get("/:id", getOne);
  *       500:
  *         description: Server error
  */
-ResourceCategoryRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update);
+ResourceCategoryRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
 
 /**
  * @swagger
@@ -135,6 +135,6 @@ ResourceCategoryRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update)
  *       500:
  *         description: Server error
  */
-ResourceCategoryRouter.delete("/:id", verifyToken, selfPolice(["admin"]), remove);
+ResourceCategoryRouter.delete("/:id", verifyToken, selfPolice(["Admin"]), remove);
 
 export default ResourceCategoryRouter;

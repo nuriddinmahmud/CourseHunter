@@ -14,7 +14,7 @@ async function getPaginatedEducationalCentres(req, res) {
         offset: (+page - 1) * +limit,
         limit: +limit,
       },
-      { include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region }] }
+      { include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, { model: Region }] }
     );
     res.status(200).send({ data: educationalCenters });
   } catch (error) {
@@ -26,7 +26,7 @@ async function getAll(req, res) {
   try {
     let educationalCenters = await EducationalCentre.findAll({
       attributes: { exclude: ["educationalCentreID"] },
-      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region }],
+      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, { model: Region }],
     });
     if (!educationalCenters.length) {
       return res.status(200).send({ msg: "Not found!" });
@@ -42,7 +42,7 @@ async function getOne(req, res) {
     let { id } = req.params;
     let educationalCenter = await EducationalCentre.findByPk(id, {
       attributes: { exclude: ["educationalCentreID"] },
-      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region, attributes: ['name'] }],
+      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, { model: Region, attributes: ['name'] }],
     });
     if (!educationalCenter) {
       return res.status(200).send({ msg: "Not found!" });
@@ -56,20 +56,20 @@ async function getOne(req, res) {
 async function create(req, res) {
   try {
     let body = req.body;
-    let { role } = req.user;
-    let { error, value } = educationCenterValidation(body);
+    let { role, id } = req.user;
+    let { error } = educationCenterValidation(body);
     if (error) {
       return res.status(400).send(error.details[0].message);
     }
 
     if (role === "ceo" || role == "admin") {
-      let newEducationalCenter = await EducationalCentre.create(value);
+      let newEducationalCenter = await EducationalCentre.create({ ...body, userID: id });
       res.status(200).send({ message: "Created successfully✅", data: newEducationalCenter });
     } else {
       res.status(405).send({ message: 'Not permission. Only Ceo and Admin can create Educational Centre' });
     }
   } catch (error) {
-    res.status(500).send({message: error.message});
+    res.status(500).send({ message: error.message });
   }
 }
 

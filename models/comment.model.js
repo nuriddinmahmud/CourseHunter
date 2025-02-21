@@ -1,4 +1,4 @@
-import { DataTypes } from "sequelize"; 
+import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import EducationalCentre from "../models/educationalCenter.model.js";
 import Users from "./users.model.js";
@@ -34,12 +34,12 @@ const Comment = sequelize.define("Comments", {
       model: Users,
       key: "id",
     },
-    allowNull: false,
+    allowNull: true,
   },
 });
 
-EducationalCentre.hasMany(Comment, { foreignKey: "educationalCentreID" });
 Comment.belongsTo(EducationalCentre, { foreignKey: "educationalCentreID" });
+EducationalCentre.hasMany(Comment, { foreignKey: "educationalCentreID" });
 
 Users.hasMany(Comment, { foreignKey: "userID" });
 Comment.belongsTo(Users, { foreignKey: "userID" });

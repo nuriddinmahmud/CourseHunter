@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { findAll, create, findOne, update, remove } from "../controllers/reception.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import checkRole from "../middleware/rolePolice.js";
 
 const receptionRoute = Router();
 
@@ -32,8 +34,6 @@ receptionRoute.get('/', findAll);
  *           schema:
  *             type: object
  *             properties:
- *               userID:
- *                 type: integer
  *               fieldID:
  *                 type: integer
  *               branchID:
@@ -41,7 +41,6 @@ receptionRoute.get('/', findAll);
  *               educationalCentreID:
  *                 type: integer
  *             required:
- *               - userID
  *               - fieldID
  *               - branchID
  *               - educationalCentreID
@@ -53,7 +52,7 @@ receptionRoute.get('/', findAll);
  *       500:
  *         description: Server error
  */
-receptionRoute.post('/', create);
+receptionRoute.post('/', verifyToken, create);
 
 /**
  * @swagger
@@ -116,7 +115,7 @@ receptionRoute.get('/:id', findOne);
  *       500:
  *         description: Server error
  */
-receptionRoute.patch('/:id', update);
+receptionRoute.patch('/:id', verifyToken, checkRole(['Admin', 'Ceo']), update);
 
 /**
  * @swagger
@@ -139,6 +138,6 @@ receptionRoute.patch('/:id', update);
  *       500:
  *         description: Server error
  */
-receptionRoute.delete('/:id', remove);
+receptionRoute.delete('/:id', verifyToken, checkRole(['Admin', 'Ceo']), remove);
 
 export default receptionRoute;
