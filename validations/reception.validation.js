@@ -2,7 +2,7 @@ import Joi from "joi";
 
 function receptionValidation(data) {
   const receptionSchema = Joi.object({
-    userId: Joi.number().positive().required(),
+    userID: Joi.number().positive().required(),
     fieldID: Joi.number().positive().required(),
     branchID: Joi.number().positive().required(),
     educationalCentreID: Joi.number().positive().required(),

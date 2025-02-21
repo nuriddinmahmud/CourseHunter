@@ -33,6 +33,7 @@ const getAll = async (req, res) => {
     const fields = await Field.findAndCountAll({
       where: whereClause,
       include: [{ model: Course, attributes: ["id", "name", "image", "type"] }],
+      attributes: ["id", "name", "image", "courseID","updatedAt","createdAt"],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
     });
@@ -53,6 +54,7 @@ const getOne = async (req, res) => {
     const { id } = req.params;
     const field = await Field.findByPk(id, {
       include: [{ model: Course }],
+      attributes: ["id", "name", "image", "courseID","updatedAt","createdAt"],
     });
 
     if (!field) return res.status(404).json({ message: "Field not found" });
@@ -69,10 +71,10 @@ const update = async (req, res) => {
     const { error } = fieldValidationUpdate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
-    const field = await Field.findByPk(id);
+    const field = await Field.findByPk(id, {attributes: ["id", "name", "image", "courseID","updatedAt","createdAt"]});
     if (!field) return res.status(404).json({ message: "Field not found" });
 
-    await field.update(req.body, { where: { id } });
+    await field.update(req.body, { where: { id }});
     res.status(200).json(field);
   } catch (err) {
     res.status(500).json({ error: err.message });

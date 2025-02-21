@@ -51,12 +51,14 @@ async function update(req, res) {
             return res.status(422).send({message: error.details[0].message});
         }
 
-        const updateResource = await Resource(value, {where: {id}});
+        const updateResource = await Resource.update(value, {where: {id}});
+
         if(!updateResource) {
             return res.status(404).send({message: 'Resource not found ❗'});
         }
 
-        res.status(200).send({message: 'Resource updated successfully'});
+        const result = await Resource.findByPk(id);
+        res.status(200).send({message: 'Resource updated successfully', data: result});
     } catch (error) {
         res.status(400).send({message_error: error.message});
     }

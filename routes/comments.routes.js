@@ -159,8 +159,6 @@ commentRouter.get('/sortCommenstCount', sortCommenstCount);
  *                 type: string
  *               star:
  *                 type: number
- *               createdAt:
- *                 type: string
  *               educationalCentreID:
  *                 type: number
  *               userID:

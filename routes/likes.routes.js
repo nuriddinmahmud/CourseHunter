@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove,  sortLikesCount } from "../controllers/likes.controller.js";
 
+const likesRouter = Router();
+
 /**
  * @swagger
  * tags:
  *   name: Likes
- */
+*/
 
 /**
  * @swagger
@@ -47,7 +49,8 @@ import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove,  sortLi
  *       500:
  *         description: Internal server error
  */
-const likesRouter = Router();
+likesRouter.post("/", create);
+
 
 /**
  * @swagger
@@ -83,6 +86,25 @@ const likesRouter = Router();
  */
 likesRouter.get("/with-pagination", getPaginatedLikes);
 
+/**
+ * @swagger
+ * /likes/getSearch:
+ *   get:
+ *     summary: Search likes
+ *     tags: [Likes]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for likes
+ *     responses:
+ *       200:
+ *         description: Found likes based on search term
+ *       400:
+ *         description: No likes found
+ */
+likesRouter.get("/getSearch", getBySearch);
 /**
  * @swagger
  * /likes:
@@ -124,25 +146,6 @@ likesRouter.get("/", getAll);
  */
 likesRouter.get("/:id", getOne);
 
-/**
- * @swagger
- * /likes/getSearch:
- *   get:
- *     summary: Search likes
- *     tags: [Likes]
- *     parameters:
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search term for likes
- *     responses:
- *       200:
- *         description: Found likes based on search term
- *       400:
- *         description: No likes found
- */
-likesRouter.get("/getSearch", getBySearch);
 
 /**
  * @swagger
