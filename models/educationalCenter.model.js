@@ -25,7 +25,7 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
       model: Users,
       key: "id",
     },
-    allowNull: false,
+    allowNull: true,
   },
 
   regionID: {
@@ -44,7 +44,7 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
 });
 
 //CEO
-  EducationalCentre.belongsTo(Users, { foreignKey: "userID" });
+EducationalCentre.belongsTo(Users, { foreignKey: "userID" });
 Users.hasMany(EducationalCentre, { foreignKey: "userID" });
 
 EducationalCentre.belongsTo(Region, { foreignKey: "regionID" });

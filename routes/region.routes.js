@@ -1,14 +1,16 @@
 import { Router } from "express";
-import { 
-  create, 
-  getAll, 
-  getBySearch, 
-  getOne, 
-  getPaginatedRegions, 
-  remove, 
-  sortByName, 
-  update 
+import {
+  create,
+  getAll,
+  getBySearch,
+  getOne,
+  getPaginatedRegions,
+  remove,
+  sortByName,
+  update
 } from "../controllers/region.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import checkRole from "../middleware/rolePolice.js";
 
 const regionRouter = Router();
 
@@ -141,7 +143,7 @@ regionRouter.get("/:id", getOne);
  *       400:
  *         description: Validation error
  */
-regionRouter.post("/", create);
+regionRouter.post("/", verifyToken, checkRole(['Admin']), create);
 
 /**
  * @swagger
@@ -175,7 +177,7 @@ regionRouter.post("/", create);
  *       500:
  *         description: Server error
  */
-regionRouter.patch("/:id", update);
+regionRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
 
 /**
  * @swagger
@@ -198,6 +200,6 @@ regionRouter.patch("/:id", update);
  *       500:
  *         description: Server error
  */
-regionRouter.delete("/:id", remove);
+regionRouter.delete("/:id", verifyToken, checkRole(['Admin']), remove);
 
 export default regionRouter;

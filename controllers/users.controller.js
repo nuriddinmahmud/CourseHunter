@@ -164,7 +164,7 @@ async function findAll(req, res) {
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo", ] }}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
     }
 
     else if(role === "user") { 

@@ -6,6 +6,8 @@ import {
   update,
   remove,
 } from "../controllers/branches.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import checkRole from "../middleware/rolePolice.js";
 
 const BranchRouter = express.Router();
 
@@ -51,7 +53,7 @@ const BranchRouter = express.Router();
  *       500:
  *         description: Server error
  */
-BranchRouter.post("/", create);
+BranchRouter.post("/", verifyToken, checkRole(['Admin', 'Ceo']), create);
 
 /**
  * @swagger
@@ -199,7 +201,7 @@ BranchRouter.get("/:id", getOne);
  *       500:
  *         description: Server error
  */
-BranchRouter.patch("/:id", update);
+BranchRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
 
 /**
  * @swagger
@@ -222,6 +224,6 @@ BranchRouter.patch("/:id", update);
  *       500:
  *         description: Server error
  */
-BranchRouter.delete("/:id", remove);
+BranchRouter.delete("/:id", verifyToken, checkRole(['Admin']), remove);
 
 export default BranchRouter;

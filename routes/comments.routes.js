@@ -29,8 +29,6 @@ const commentRouter = Router();
  *                 type: string
  *               educationalCentreID:
  *                 type: number
- *               userID:
- *                 type: number
  *     responses:
  *       200:
  *         description: Comment created successfully
@@ -215,8 +213,6 @@ commentRouter.get("/getSearch", getBySearch);
  *                 type: number
  *               educationalCentreID:
  *                 type: number
- *               userID:
- *                 type: number
  *     responses:
  *       200:
  *         description: Comment updated successfully
@@ -225,7 +221,7 @@ commentRouter.get("/getSearch", getBySearch);
  *       404:
  *         description: Comment not found
  */
-commentRouter.patch("/:id", update);
+commentRouter.patch("/:id", verifyToken, update);
 
 /**
  * @swagger
@@ -246,6 +242,6 @@ commentRouter.patch("/:id", update);
  *       404:
  *         description: Comment not found
  */
-commentRouter.delete("/:id", remove);
+commentRouter.delete("/:id", verifyToken, remove);
 
 export default commentRouter;

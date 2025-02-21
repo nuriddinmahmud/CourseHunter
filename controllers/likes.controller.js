@@ -10,7 +10,7 @@ async function getPaginatedLikes(req, res) {
         let likes = await Likes.findAll({
             offset: (+page - 1) * +limit,
             limit: +limit,
-            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] }, 
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] },
             { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         res.status(200).send({ data: likes });
@@ -22,7 +22,7 @@ async function getPaginatedLikes(req, res) {
 async function getAll(req, res) {
     try {
         let likes = await Likes.findAll({
-            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, 
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] },
             { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         if (!likes.length) {
@@ -38,7 +38,7 @@ async function getOne(req, res) {
     try {
         let { id } = req.params;
         let like = await Likes.findByPk(id, {
-            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, 
+            include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] },
             { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }],
         });
         if (!like) {
@@ -53,12 +53,13 @@ async function getOne(req, res) {
 async function create(req, res) {
     try {
         let body = req.body;
+        let userID = req.user.id
         let { error } = likesValidation(body);
         if (error) {
             return res.status(400).send(error.details[0].message);
         }
-        let newLike = await Likes.create(body);
-        res.status(200).send({msg: "Likes created succesfully ✅" , data: newLike});
+        let newLike = await Likes.create({ ...body, userID });
+        res.status(200).send({ msg: "Likes created succesfully ✅", data: newLike });
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -120,8 +121,10 @@ async function getBySearch(req, res) {
         });
         let likes = await Likes.findAll(
             { where: newQuery },
-            { include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] }, 
-            { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'userID', 'regionID', 'phone'] }], }
+            {
+                include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"] },
+                { model: EducationalCentre, attributes: ['id', 'name', 'image', 'address', 'regionID', 'phone'] }],
+            }
         );
         if (!likes.length) {
             return res.status(400).send({ msg: "Not found!!!" });

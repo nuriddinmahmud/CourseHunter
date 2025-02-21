@@ -10,7 +10,7 @@ const Likes = sequelize.define("Likes", {
       model: Users,
       key: "id",
     },
-    allowNull: false,
+    allowNull: true,
   },
 
   educationalCentreID: {

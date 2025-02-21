@@ -13,12 +13,12 @@ const Resource = sequelize.define("Resource", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  
+
   description: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  
+
   image: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -32,9 +32,9 @@ const Resource = sequelize.define("Resource", {
   createdBy: {
     type: DataTypes.INTEGER,
     references: { model: Users, key: "id" },
-    allowNull: false,
+    allowNull: true,
   },
-  
+
   categoryID: {
     type: DataTypes.INTEGER,
     references: { model: ResourceCategory, key: "id" },
@@ -42,8 +42,8 @@ const Resource = sequelize.define("Resource", {
   },
 });
 
-Resource.hasMany(Users, { foreignKey: "createdBy" });
-Users.belongsTo(Resource, { foreignKey: "createdBy" });
+Resource.belongsTo(Users, { foreignKey: "createdBy" });
+Users.hasMany(Resource, { foreignKey: "createdBy" });
 
 ResourceCategory.hasMany(Resource, { foreignKey: "categoryID" });
 Resource.belongsTo(ResourceCategory, { foreignKey: "categoryID" });

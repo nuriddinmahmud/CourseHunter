@@ -30,8 +30,8 @@ const Users = sequelize.define("Users", {
   },
 
   role: {
-    type: DataTypes.ENUM("admin", "user", "ceo"),
-    defaultValue: "user",
+    type: DataTypes.ENUM("Admin", "User", "Ceo"),
+    defaultValue: "User",
     allowNull: false,
   },
 
@@ -41,9 +41,9 @@ const Users = sequelize.define("Users", {
   },
 
   status: {
-    type: DataTypes.ENUM("active", "inactive"),
+    type: DataTypes.ENUM("Active", "Inactive"),
     allowNull: true,
-    defaultValue: "inactive",
+    defaultValue: "Inactive",
   },
 });
 

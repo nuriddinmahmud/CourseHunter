@@ -21,7 +21,7 @@ const Reception = sequelize.define("Reception", {
       model: Users,
       key: "id",
     },
-    allowNull: false,
+    allowNull: true,
   },
 
   branchID: {
@@ -36,8 +36,8 @@ const Reception = sequelize.define("Reception", {
   educationalCentreID: {
     type: DataTypes.INTEGER,
     references: {
-        model: EducationalCentre,
-        key: 'id',
+      model: EducationalCentre,
+      key: 'id',
     },
     allowNull: false,
   }
@@ -52,7 +52,7 @@ Reception.belongsTo(Users, { foreignKey: "userID" });
 Branch.hasOne(Reception, { foreignKey: "branchID" });
 Reception.belongsTo(Branch, { foreignKey: "branchID" });
 
-EducationalCentre.hasMany(Reception, {foreignKey: 'educationalCentreID'});
-Reception.belongsTo(EducationalCentre, {foreignKey: 'educationalCentreID'});
+EducationalCentre.hasMany(Reception, { foreignKey: 'educationalCentreID' });
+Reception.belongsTo(EducationalCentre, { foreignKey: 'educationalCentreID' });
 
 export default Reception;

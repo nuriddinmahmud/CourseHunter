@@ -6,8 +6,8 @@ import {
   findAll,
   update,
   remove,
-  findOne,
-  promoteToAdmin,
+ promoteToAdmin,
+ findOne,
   myEducationalCentres,
 } from "../controllers/users.controller.js";
 import verifyToken from "../middleware/verifyToken.js";

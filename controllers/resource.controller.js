@@ -1,10 +1,14 @@
 import Resource from '../models/resource.model.js';
 import ResourceCategory from '../models/resourceCategory.model.js';
+import Users from '../models/users.model.js';
 import {resourceValidation, resourceValidationUpdate } from '../validations/resource.validation.js';
 
 async function findAll(req, res) {
     try {
-        const findAllResource = await Resource.findAll({include: {model: ResourceCategory, attributes: ["id", "name", "image", "createdAt", "updatedAt"]}, attributes: ["id", "name", "media", "description", "image", "createdAt", "updatedAt"]});
+        const findAllResource = await Resource.findAll({include:[ {model: ResourceCategory, attributes: ["id", "name", "image", "createdAt", "updatedAt"]}, 
+            {model: ResourceCategory, attributes: ["id", "name",  "image"]},
+            {model: Users, attributes: {exclude: ['password', 'status']}}
+        ]});
         if(!findAllResource.length) {
             return res.status(200).send({message: "Resources are empty ❗"});
         }
@@ -17,11 +21,12 @@ async function findAll(req, res) {
 async function create(req, res) {
     try {
         const body = req.body;
+        const createdBy = req.user.id
         const { error, value } = resourceValidation(body);
         if(error) {
             return res.status(422).send({message: error.details[0].message});
         }
-        const createResources = await Resource.create(value);
+        const createResources = await Resource.create({...value, createdBy});
         res.status(200).send({message: "Resource created successfully", data: createResources});
     } catch (error) {
         res.status(400).send({message_error: error.message});
@@ -31,7 +36,11 @@ async function create(req, res) {
 async function findOne(req, res) {
     try {
         let { id } = req.params;
-        const findOneResource = await Resource.findByPk(id, {include: {model: ResourceCategory, attributes: ["id", "name", "image", "createdAt", "updatedAt"]}, attributes: ["id", "name", "media", "description", "image", "createdAt", "updatedAt"]});
+        const findOneResource = await Resource.findByPk(id, {include:[
+            {model: ResourceCategory, attributes: ["id", "name", "image", "createdAt", "updatedAt"]}, 
+            {model: ResourceCategory, attributes: ["id", "name",  "image"]},
+            {model: Users, attributes: {exclude: ['password', 'status']}}]
+        });
         if(!findOneResource) {
             return res.status(404).send({message: "Resource not found ❗"});
         }

@@ -161,8 +161,6 @@ educationalCenterRouter.get("/:id", getOne);
  *                 type: string
  *               address:
  *                 type: string
- *               userID:
- *                 type: integer
  *               regionID:
  *                 type: integer
  *               phone:
@@ -171,7 +169,6 @@ educationalCenterRouter.get("/:id", getOne);
  *               - name
  *               - image
  *               - address
- *               - userID
  *               - regionID
  *               - phone
  *     responses:
@@ -182,7 +179,7 @@ educationalCenterRouter.get("/:id", getOne);
  *       405:
  *         description: Unauthorized user role
  */
-educationalCenterRouter.post("/", verifyToken, checkRole(["ceo", "admin"]), create);
+educationalCenterRouter.post("/", verifyToken, checkRole(["Ceo", "Admin"]), create);
 
 /**
  * @swagger
@@ -210,8 +207,6 @@ educationalCenterRouter.post("/", verifyToken, checkRole(["ceo", "admin"]), crea
  *                 type: string
  *               address:
  *                 type: string
- *               userID:
- *                 type: integer
  *               regionID:
  *                 type: integer
  *               phone:
@@ -226,7 +221,7 @@ educationalCenterRouter.post("/", verifyToken, checkRole(["ceo", "admin"]), crea
  *       405:
  *         description: Unauthorized user role
  */
-educationalCenterRouter.patch("/:id", verifyToken, checkRole(["ceo", "admin"]), update);
+educationalCenterRouter.patch("/:id", verifyToken, checkRole(["Ceo", "Admin"]), update);
 
 /**
  * @swagger
@@ -249,6 +244,6 @@ educationalCenterRouter.patch("/:id", verifyToken, checkRole(["ceo", "admin"]), 
  *       405:
  *         description: Unauthorized user role
  */
-educationalCenterRouter.delete("/:id", verifyToken, checkRole(["ceo", "admin"]), remove);
+educationalCenterRouter.delete("/:id", verifyToken, checkRole(["Ceo", "Admin"]), remove);
 
 export default educationalCenterRouter;

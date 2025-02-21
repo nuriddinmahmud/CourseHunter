@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove,  sortLikesCount } from "../controllers/likes.controller.js";
+import { create, getAll, getBySearch, getOne, getPaginatedLikes, remove, sortLikesCount } from "../controllers/likes.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
 
 const likesRouter = Router();
 
@@ -22,8 +23,6 @@ const likesRouter = Router();
  *           schema:
  *             type: object
  *             properties:
- *               userID:
- *                 type: integer
  *               educationalCentreID:
  *                 type: integer
  *     responses:
@@ -40,8 +39,6 @@ const likesRouter = Router();
  *                 data:
  *                   type: object
  *                   properties:
- *                     userID:
- *                       type: integer
  *                     educationalCentreID:
  *                       type: integer
  *       400:
@@ -50,7 +47,7 @@ const likesRouter = Router();
  *         description: Internal server error
  */
 
-likesRouter.post("/", create)
+likesRouter.post("/", verifyToken, create)
 
 
 /**
@@ -167,7 +164,7 @@ likesRouter.get("/:id", getOne);
  *       404:
  *         description: Like not found
  */
-likesRouter.delete("/:id", remove);
+likesRouter.delete("/:id", verifyToken, remove);
 
 /**
  * @swagger

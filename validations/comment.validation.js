@@ -16,7 +16,6 @@ function commentValidationUpdate(data){
         star: Joi.number().positive(),
         createdAt: Joi.date(),
         educationalCentreID: Joi.number().positive(),
-        userID: Joi.number().positive(),
     });
     return commentSchema.validate(data, {abortEarly: true});
 }
