@@ -42,7 +42,7 @@ async function getOne(req, res) {
     let { id } = req.params;
     let educationalCenter = await EducationalCentre.findByPk(id, {
       attributes: { exclude: ["educationalCentreID"] },
-      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]}, { model: Region, attributes: ['name'] }],
+      include: [{ model: Users, attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]}, { model: Region, attributes: ['name'] }],
     });
     if (!educationalCenter) {
       return res.status(200).send({ msg: "Not found!" });

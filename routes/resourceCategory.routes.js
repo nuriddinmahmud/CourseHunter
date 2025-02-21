@@ -6,6 +6,8 @@ import {
   update,
   remove,
 } from "../controllers/resourceCategory.controller.js";
+import verifyToken from "../middleware/verifyToken.js";
+import selfPolice from "../middleware/selfPolice.js";
 
 const ResourceCategoryRouter = express.Router();
 
@@ -35,7 +37,7 @@ const ResourceCategoryRouter = express.Router();
  *       400:
  *         description: Validation error
  */
-ResourceCategoryRouter.post("/", create);
+ResourceCategoryRouter.post("/", verifyToken, selfPolice(["admin"]), create);
 
 /**
  * @swagger
@@ -110,7 +112,7 @@ ResourceCategoryRouter.get("/:id", getOne);
  *       500:
  *         description: Server error
  */
-ResourceCategoryRouter.patch("/:id", update);
+ResourceCategoryRouter.patch("/:id", verifyToken, selfPolice(["admin"]), update);
 
 /**
  * @swagger
@@ -133,6 +135,6 @@ ResourceCategoryRouter.patch("/:id", update);
  *       500:
  *         description: Server error
  */
-ResourceCategoryRouter.delete("/:id", remove);
+ResourceCategoryRouter.delete("/:id", verifyToken, selfPolice(["admin"]), remove);
 
 export default ResourceCategoryRouter;

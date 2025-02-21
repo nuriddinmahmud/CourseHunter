@@ -18,7 +18,7 @@ async function getAll(req, res) {
   try {
     let regions = await Region.findAll();
     if (!regions.length) {
-      return res.status(401).send({ msg: "Not found!" });
+      return res.status(200).send({ msg: "Empty ❗" });
     }
     res.status(200).send({ data: regions });
   } catch (error) {
@@ -47,7 +47,9 @@ async function create(req, res) {
       return res.status(400).send(error.details[0].message);
     }
     let newRegion = await Region.create(body);
-    res.status(200).send(newRegion);
+    res
+      .status(200)
+      .send({ msg: "Region created seccesed ✅", data: newRegion });
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -57,7 +59,9 @@ async function update(req, res) {
   try {
     let { id } = req.params;
     await Region.update(req.body, { where: { id } });
-    res.status(200).json({ message: "Successfully updated!!!" });
+
+    const Result = await Region.findByPk(id);
+    res.status(200).json({ message: "Successfully updated!!!", data: Result });
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -67,6 +71,7 @@ async function remove(req, res) {
   try {
     let { id } = req.params;
     await Region.destroy({ where: { id } });
+
     res.status(200).json({ msg: "Successfully deleted!" });
   } catch (error) {
     res.status(400).send(error.message);
@@ -75,7 +80,6 @@ async function remove(req, res) {
 
 async function sortByName(req, res) {
   try {
-    console.log(1);
     let { name } = req.query;
     let regions = await Region.findAll({
       order: [["name", name]],
@@ -88,27 +92,31 @@ async function sortByName(req, res) {
 
 async function getBySearch(req, res) {
   try {
+    console.log("Query params:", req.query);
+
     let query = req.query;
-    let keys = Object.keys(query);
-    let values = Object.values(query);
 
-    let newQuery = {};
-
-    values.forEach((val, index) => {
-      if (val) {
-        newQuery[keys[index]] = val;
-        return;
-      }
-    });
-    let regions = await Region.findAll({ where: newQuery });
-    if (!regions.length) {
-      return res.status(400).send({ msg: "Not found!!!" });
+    if (!Object.keys(query).length) {
+      return res.status(400).send({ msg: "Search query is required" });
     }
+
+    let newQuery = Object.entries(query)
+      .filter(([_, val]) => val)
+      .reduce((acc, [key, val]) => ({ ...acc, [key]: val }), {});
+
+    let regions = await Region.findAll({ where: newQuery });
+
+    if (!regions.length) {
+      return res.status(404).send({ msg: "Not found!!!" });
+    }
+
     res.status(200).send({ data: regions });
   } catch (error) {
-    res.status(400).send(error.message);
+    console.error("Error in getBySearch:", error);
+    res.status(500).send({ msg: "Internal Server Error", error: error.message });
   }
 }
+
 
 export {
   getAll,

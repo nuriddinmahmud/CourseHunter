@@ -17,7 +17,7 @@ function educationalCenterValidationUpdate(data) {
     name: Joi.string().min(2),
     image: Joi.string(),
     address: Joi.string(),
-    userID: Joi.number().positive(),
+    userId: Joi.number().positive(),
     regionID: Joi.number().positive(),
     phone: Joi.string().min(13),
   });

@@ -5,9 +5,9 @@ import selfPolice from "../middleware/selfPolice.js";
 
 const resourceRoute = Router();
 
-resourceRoute.get('/', verifyToken, selfPolice(["user"]), findAll);
+resourceRoute.get('/', findAll);
 resourceRoute.post('/', verifyToken, selfPolice(["user"]), create);
-resourceRoute.get('/:id', verifyToken, selfPolice(["user"]), findOne);
+resourceRoute.get('/:id', findOne);
 resourceRoute.patch('/:id', verifyToken, selfPolice(["user"]), update);
 resourceRoute.delete('/:id', verifyToken, selfPolice(["user"]), remove);
 

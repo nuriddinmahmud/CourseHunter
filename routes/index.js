@@ -15,7 +15,7 @@ import uploadImageRoute from "./upload-image.routes.js";
 
 const mainRouter = Router();
 
-mainRouter.use("/educationalCentre", educationalCenterRouter);
+mainRouter.use("/educationalcenters", educationalCenterRouter);
 mainRouter.use("/resourceCategory", ResourceCategoryRouter);
 mainRouter.use("/comments", commentRouter);
 mainRouter.use("/regions", regionRouter);

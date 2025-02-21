@@ -59,6 +59,28 @@ regionRouter.get("/sortByName", sortByName);
 
 /**
  * @swagger
+ * /regions/getSearch:
+ *   get:
+ *     summary: Search regions by query parameters
+ *     tags: [Regions]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Search term for region names
+ *     responses:
+ *       200:
+ *         description: List of regions matching search criteria
+ *       400:
+ *         description: No matching regions found
+ *       500:
+ *         description: Server error
+ */
+regionRouter.get("/getSearch", getBySearch);
+
+/**
+ * @swagger
  * /regions:
  *   get:
  *     summary: Get all regions
@@ -95,28 +117,6 @@ regionRouter.get("/", getAll);
  *         description: Server error
  */
 regionRouter.get("/:id", getOne);
-
-/**
- * @swagger
- * /regions/getSearch:
- *   get:
- *     summary: Search regions by query parameters
- *     tags: [Regions]
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: Search term for region names
- *     responses:
- *       200:
- *         description: List of regions matching search criteria
- *       400:
- *         description: No matching regions found
- *       500:
- *         description: Server error
- */
-regionRouter.get("/getSearch", getBySearch);
 
 /**
  * @swagger

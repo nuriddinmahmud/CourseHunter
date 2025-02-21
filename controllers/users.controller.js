@@ -10,12 +10,32 @@ import fs from "fs";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
-import EducationalCentre from "../models/educationalCenter.model.js";
 import path from 'path';
-import { fileURLToPath } from "url";
+import EducationalCentre from "../models/educationalCenter.model.js";
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
+
+function FormatphoneNumber(phone) {
+  try {
+      if(!/^\d{12}$/.test(phone)) {
+          throw new Error("Phone number is wrong ❗");
+      }
+
+      let raqamdavlatqodi = phone.slice(0, 3);
+      let asosiyqismi = phone.slice(3, 5);
+      let birinchiqismi = phone.slice(5, 8);
+      let ikkinchiqismi = phone.slice(8, 10);
+      let oxirgiqismi = phone.slice(10, 12);
+
+      return `+${raqamdavlatqodi} (${asosiyqismi}) ${birinchiqismi}-${ikkinchiqismi}-${oxirgiqismi}`;
+
+  } catch(e) {
+      console.log(e.message);
+  }
+}
+
+export default FormatphoneNumber;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -27,9 +47,26 @@ const transporter = nodemailer.createTransport({
 
 totp.options = { step: 1800, digits: 6 };
 
+const deleteOldImage = (imgPath) => { 
+  if (imgPath) { 
+    const fullPath = path.join("uploads", imgPath); 
+    if (fs.existsSync(fullPath)) { 
+      fs.unlinkSync(fullPath); 
+    } 
+  } 
+};
+
 async function register(req, res) {
   try {
     const body = req.body;
+
+    let formattedPhoneNumber = FormatphoneNumber(body.phone);
+    if(!formattedPhoneNumber) {
+      return res.status(422).send({message: 'Invalid a phone number format❗'}); 
+    }
+
+    body.phone = formattedPhoneNumber;
+
     let findUser = await Users.findOne({where: { email: body.email }});
     if(findUser) {
       return res.status(405).send({message: 'This account already exists ❗'});
@@ -37,7 +74,7 @@ async function register(req, res) {
 
     const { error, value } = usersValidation(body);
     if (error) {
-      return res.status(400).send({ message: error.details[0].message });
+      return res.status(422).send({ message: error.details[0].message });
     }
 
     value.password = await bcrypt.hash(body.password, 10);
@@ -52,7 +89,7 @@ async function register(req, res) {
 
     res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message});
   }
 }
 
@@ -77,7 +114,7 @@ async function verifyOtp(req, res) {
       .status(200)
       .send({ message: "Your account has been activated successfully" });
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 
@@ -87,7 +124,7 @@ async function login(req, res) {
     let user = await Users.findOne({ where: { email } });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(404).send({ message: "Invalid email or password ❗" });
+      return res.status(422).send({ message: "Invalid email or password ❗" });
     }
 
     if (user.status === "inactive") {
@@ -97,7 +134,7 @@ async function login(req, res) {
     let accessToken = await accessTokenGenereate({ id: user.id, email: user.email, role: user.role });
     res.status(200).send({ message: "Logged in successfully", access_token: accessToken });
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 
@@ -110,39 +147,41 @@ async function accessTokenGenereate(payload) {
   }
 }
 
+async function promoteToAdmin(req, res) {
+  try {
+      const role = "admin"
+      let { id } = req.params;
+      await Users.update({ role }, { where: { id } })
+      res.status(200).send({ message: "Updated successfully" })
+  } catch (error) {
+      res.status(400).send({error_message: error.message});
+  }
+}
+
 async function findAll(req, res) {
   try {
-    console.log(1);
-
     let { role } = req.user;
     let findAllUsers = [];
 
     if (role === "admin") {
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo"] }}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
     }
 
     else if(role === "user") { 
-      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
     }
-
-    else if (role === "ceo") {
-      const educationalCentre = await EducationalCentre.findOne({
-        where: { userID: req.user.id }
-      });
-
-      if (!educationalCentre) {
-        return res.status(404).send({ message: 'Educational Centre not found ❗' });
-      }
-
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user"] }, educationalCentreID: educationalCentre.id}, include: [{model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}]});
-    }
+    
     else {
       return res.status(403).send({message: 'Unauthorization user type ❗'});
     }
 
+    // if(!findAllUsers.length) {
+    //   return res.status(200).send({message: 'Users are empty ❗'});
+    // }
+
     res.status(200).send({ data: findAllUsers });
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 
@@ -154,25 +193,17 @@ async function findOne(req, res) {
     let user = [];
 
     if (role === "admin") {
-      user = await Users.findOne({ where: { id, role: {[Op.in]: ["ceo", "user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+      user = await Users.findOne({ where: { id, role: {[Op.in]: ["ceo", "user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
       if (!user) {
         return res.status(404).send({ message: "User or Ceo not found ❗"});
       }
     }
     
     else if (role === "user") {
-      user = await Users.findOne({ where: { id, role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"] });
+      user = await Users.findOne({ where: { id, role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
       if (!user) {
         return res.status(404).send({ message: "User not found ❗" });
       }
-    }
-
-    else if(role === "ceo") {
-      let educationalCentre = await EducationalCentre.findOne({where: {userID: req.user.id}});
-      if(!educationalCentre) {
-        return res.status(404).send({message: 'Educational Centre not found ❗'});
-      }
-      user = await Users.findOne({where: {id, role: {[Op.in]: ["user"]}}, educationalCentreID: educationalCentre.id });
     }
 
     else {
@@ -181,57 +212,45 @@ async function findOne(req, res) {
 
     res.status(200).send({ data: user });
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 
 async function update(req, res) {
   try {
     let { id } = req.params;
-    let body = req.body;
-    const { error, value } = usersValidationUpdate(body);
+    const { error, value } = usersValidationUpdate(req.body);
     if (error) {
-      if (body.avatar) {
-        fs.unlink(body.avatar.path, (e) => {
-          console.log(e ? e.message : "image deleted");
-        });
-      }
-      return res.status(400).send({ message: error.details[0].message });
+      return res.status(422).send({ message: error.details[0].message });
     }
 
     if (value.password) {
       value.password = await bcrypt.hash(value.password, 10);
     }
 
-    let updatedUser = await Users.update(value, {
-      where: { id },
-      returning: true,
-    });
+    const updatedUser = await Users.update(value, {where: {id}});
     if (!updatedUser.length) {
-      return res.status(400).send({ message: "User not found ❗️" });
+      res.status(404).send({ message: "User not found ❗️" });
+      return;
     }
 
-    let result = await Users.findByPk(id, {attributes: ["id", "firstName", "lastName", "email", "password", "phone", "role", "avatar", "status"]});
-    res.status(200).send({data: result});
+    let result = await Users.findByPk(id, {attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]});
+    res.status(200).send({message: "User updated successfully", data: result});
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function remove(req, res) {
   try {
     let { id } = req.params;
     let find = await Users.findByPk(id);
 
-    let imagePath = path.join(__dirname, '../uploads', find.avatar);
-    let deletedUser = await Users.destroy({ where: { id, role: {[Op.in]: ["ceo", "user"]}}});
+    if(find.avatar) {
+      deleteOldImage(find.avatar);
+    }
 
-    fs.unlink(imagePath, (e) => {
-      console.log(e ? e.message : 'image deleted');
-    });
+    let deletedUser = await Users.destroy({ where: { id, role: {[Op.in]: ["ceo", "user"]}}});
 
     if (!deletedUser) {
       return res.status(404).send({ message: " User not found ❗" });
@@ -239,8 +258,17 @@ async function remove(req, res) {
 
     res.status(200).send({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 
-export { register, verifyOtp, login, findOne, findAll, update, remove };
+async function myEducationalCentres(req, res) {
+  try {
+    const allCentres = await Users.findAll({where: {role: {[Op.in]: ["ceo"]}}, attributes: ["id", "firstName", "lastName", "email", "phone",  "role", "avatar", "status"]}, {include: {model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}});
+    res.status(200).send({data: allCentres});
+  } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
+
+export { register, verifyOtp, login, findOne, findAll, update, remove, promoteToAdmin, myEducationalCentres };

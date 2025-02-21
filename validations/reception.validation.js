@@ -12,7 +12,7 @@ function receptionValidation(data) {
 
 function receptionValidationUpdate(data) {
   const receptionSchema = Joi.object({
-    userID: Joi.number().positive(),
+    userId: Joi.number().positive(),
     fieldID: Joi.number().positive(),
     branchID: Joi.number().positive(),
     educationalCentreID: Joi.number().positive(),
