@@ -106,8 +106,8 @@ async function verifyOtp(req, res) {
       return res.status(403).send({ message: "OTP is incorrect ❗" });
     }
 
-    if (findUser.status === "inactive") {
-      await Users.update({ status: "active" }, { where: { email } });
+    if (findUser.status === "Inactive") {
+      await Users.update({ status: "Active" }, { where: { email } });
     }
 
     res

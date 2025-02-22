@@ -12,42 +12,51 @@ const likesRouter = Router();
 
 /**
  * @swagger
- * /likes:
- *   post:
- *     summary: Create a new like
+ * /likes/sortLikesCount:
+ *   get:
+ *     summary: Sort likes by like count for each educational centre
  *     tags: [Likes]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               educationalCentreID:
- *                 type: integer
  *     responses:
  *       200:
- *         description: Like created successfully
+ *         description: Sorted likes by like count
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Created like successfully
- *                 data:
- *                   type: object
- *                   properties:
- *                     educationalCentreID:
- *                       type: integer
- *       400:
- *         description: Invalid input data
- *       500:
- *         description: Internal server error
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   educationalCentreID:
+ *                     type: integer
+ *                   likeCount:
+ *                     type: integer
  */
+likesRouter.get("/sortLikesCount", sortLikesCount);
 
-likesRouter.post("/", verifyToken, create)
+/**
+ * @swagger
+ * /likes/getSearch:
+ *   get:
+ *     summary: Search likes for a user and educational centre
+ *     tags: [Likes]
+ *     parameters:
+ *       - in: query
+ *         name: userID
+ *         schema:
+ *           type: integer
+ *         description: The user ID for searching likes
+ *       - in: query
+ *         name: educationalCentreID
+ *         schema:
+ *           type: integer
+ *         description: The educational centre ID for filtering likes
+ *     responses:
+ *       200:
+ *         description: Found likes based on user ID and educational centre ID
+ *       400:
+ *         description: Bad request or invalid parameters
+ */
+likesRouter.get("/getSearch", getBySearch);
 
 /**
  * @swagger
@@ -83,25 +92,6 @@ likesRouter.post("/", verifyToken, create)
  */
 likesRouter.get("/with-pagination", getPaginatedLikes);
 
-/**
- * @swagger
- * /likes/getSearch:
- *   get:
- *     summary: Search likes
- *     tags: [Likes]
- *     parameters:
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search term for likes
- *     responses:
- *       200:
- *         description: Found likes based on search term
- *       400:
- *         description: No likes found
- */
-likesRouter.get("/getSearch", getBySearch);
 /**
  * @swagger
  * /likes:
@@ -146,6 +136,46 @@ likesRouter.get("/:id", getOne);
 
 /**
  * @swagger
+ * /likes:
+ *   post:
+ *     summary: Create a new like
+ *     tags: [Likes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               educationalCentreID:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Like created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Created like successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     educationalCentreID:
+ *                       type: integer
+ *       400:
+ *         description: Invalid input data
+ *       500:
+ *         description: Internal server error
+ */
+
+likesRouter.post("/", verifyToken, create)
+
+
+/**
+ * @swagger
  * /likes/{id}:
  *   delete:
  *     summary: Delete a specific like
@@ -164,28 +194,5 @@ likesRouter.get("/:id", getOne);
  *         description: Like not found
  */
 likesRouter.delete("/:id", verifyToken, remove);
-
-/**
- * @swagger
- * /likes/sortLikesCount:
- *   get:
- *     summary: Sort likes by like count for each educational centre
- *     tags: [Likes]
- *     responses:
- *       200:
- *         description: Sorted likes by like count
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   educationalCentreID:
- *                     type: integer
- *                   likeCount:
- *                     type: integer
- */
-likesRouter.get("/sortLikesCount", sortLikesCount);
 
 export default likesRouter;

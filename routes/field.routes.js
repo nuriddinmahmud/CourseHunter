@@ -14,36 +14,6 @@ const FieldRouter = express.Router();
 /**
  * @swagger
  * /fields:
- *   post:
- *     summary: Create a new field
- *     tags: [Fields]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               image:
- *                 type: string
- *               courseID:
- *                 type: integer
- *             required:
- *               - name
- *               - image
- *     responses:
- *       201:
- *         description: Field created successfully
- *       400:
- *         description: Validation error
- */
-FieldRouter.post("/", verifyToken, checkRole(["Admin", 'Ceo']), create);
-
-/**
- * @swagger
- * /fields:
  *   get:
  *     summary: Get all fields with pagination
  *     tags: [Fields]
@@ -130,6 +100,36 @@ FieldRouter.get("/", getAll);
  *         description: Server error
  */
 FieldRouter.get("/:id", getOne);
+
+/**
+ * @swagger
+ * /fields:
+ *   post:
+ *     summary: Create a new field
+ *     tags: [Fields]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *               courseID:
+ *                 type: integer
+ *             required:
+ *               - name
+ *               - image
+ *     responses:
+ *       201:
+ *         description: Field created successfully
+ *       400:
+ *         description: Validation error
+ */
+FieldRouter.post("/", verifyToken, checkRole(["Admin", 'Ceo']), create);
 
 /**
  * @swagger
