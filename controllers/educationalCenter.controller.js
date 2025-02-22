@@ -62,7 +62,7 @@ async function create(req, res) {
       return res.status(400).send(error.details[0].message);
     }
 
-    if (role === "ceo" || role == "admin") {
+    if (role === "Ceo" || role == "Admin") {
       let newEducationalCenter = await EducationalCentre.create({ ...body, userID: id });
       res.status(200).send({ message: "Created successfully✅", data: newEducationalCenter });
     } else {
@@ -82,7 +82,7 @@ async function update(req, res) {
     if (error) {
       res.status(400).send(error.details[0].message);
     }
-    if (role == "admin" || role == "ceo") {
+    if (role == "Admin" || role == "Ceo") {
       await EducationalCentre.update(value, { where: { id } });
       res.status(200).json({ message: "Successfully updated!!!" });
     } else {

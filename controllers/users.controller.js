@@ -61,14 +61,14 @@ async function register(req, res) {
 
     let formattedPhoneNumber = FormatphoneNumber(body.phone);
     if(!formattedPhoneNumber) {
-      return res.status(422).send({message: 'Example phone number: 998507525150'}); 
+      return res.status(422).send({message: "Wrong phone number, You should enter the phone number in this view: 998507525150"}); 
     }
 
     body.phone = formattedPhoneNumber;
 
     let findUser = await Users.findOne({where: { email: body.email }});
     if(findUser) {
-      return res.status(405).send({message: 'This account already exists ❗'});
+      return res.status(405).send({message: "This account already exists ❗"});
     }
 
     const { error, value } = usersValidation(body);
@@ -86,7 +86,7 @@ async function register(req, res) {
       html: `This is an OTP to activate your account: <h1>${otp}</h1>`,
     });
 
-    res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation.", data: registered});
+    res.status(200).send({message: "Registered successfully ✅. We sent OTP to your email for activation", data: registered});
   } catch (error) {
     res.status(400).send({ error_message: error.message});
   }
@@ -128,8 +128,8 @@ async function login(req, res) {
       return res.status(422).send({ message: "Invalid email or password ❗" });
     }
 
-    if (user.status === "inactive") {
-      return res.status(403).send({ message: "Account not activated ❗" });
+    if (user.status === "Inactive") {
+      return res.status(403).send({ message: "Account not activated, You should activate your account ❗" });
     }
 
     let accessToken = await accessTokenGenereate({ id: user.id, email: user.email, role: user.role });
@@ -152,7 +152,7 @@ async function accessTokenGenereate(payload) {
 
 async function promoteToAdmin(req, res) {
   try {
-      const role = "admin"
+      const role = "Admin"
       let { id } = req.params;
       await Users.update({ role }, { where: { id } })
       res.status(200).send({ message: "Updated successfully" })
@@ -165,13 +165,11 @@ async function promoteToAdmin(req, res) {
 async function myInfo(req, res) {
   try {
     let { role } = req.user;
-
     if (!Array.isArray(role)) {
       role = [role]; 
     }
 
     let foundRole = role.find(r => ["Admin", "Ceo", "User"].includes(r));
-
     if(!foundRole) {
       return res.status(400).send({message: 'Unauthorization user type ❗'});
     }
@@ -196,7 +194,14 @@ async function findAll(req, res) {
       role = [role]; 
     }
 
-    let foundRole = role.find(r => ["Admin", "Ceo", "User"].includes(r));
+    if(role.includes("Admin")) {
+      let findAllUsers = await Users.findAll({
+        attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]
+      });
+      return res.status(200).send({data: findAllUsers});
+    }
+
+    let foundRole = role.filter(r => ["Ceo", "User"].includes(r));
     if(!foundRole) {
       return res.status(403).send({message: " Unauthorization user type ❗"});
     }
@@ -289,7 +294,15 @@ async function remove(req, res) {
 
 async function myEducationalCentres(req, res) {
   try {
-    const allCentres = await Users.findAll({where: {role: {[Op.in]: ["ceo"]}}, attributes: ["id", "firstName", "lastName", "email", "phone",  "role", "avatar", "status"]}, {include: {model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}});
+    let { role, id } = req.user;
+    if(!role.includes("Ceo")) {
+      return res.status(403).send({message: "Unauthorization User type ❗"});
+    }
+
+    const allCentres = await EducationalCentre.findAll({where: {userID: id}, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]});
+    if(!allCentres.length) {
+      return res.status(200).send({message: "You have not created any Educational Centres yet"});
+    }
     res.status(200).send({data: allCentres});
   } catch (error) {
     res.status(400).send({ error_message: error.message });

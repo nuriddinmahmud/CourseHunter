@@ -10,6 +10,7 @@ const sequelize = new Sequelize({
   password: process.env.PASSWORD,
   database: "course_hunter",
   logging: false,
+  timezone: "+06:00"
 });
 
 export default sequelize;

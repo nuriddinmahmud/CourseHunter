@@ -6,8 +6,8 @@ import {
   findAll,
   update,
   remove,
- promoteToAdmin,
- findOne,
+  promoteToAdmin,
+  findOne,
   myEducationalCentres,
   myInfo,
 } from "../controllers/users.controller.js";
@@ -16,7 +16,6 @@ import checkRole from "../middleware/rolePolice.js";
 import selfPolice from "../middleware/selfPolice.js";
 
 const UserRouter = express.Router();
-
 
 /**
  * @swagger
@@ -143,7 +142,9 @@ UserRouter.post("/login", login);
  */
 UserRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["Admin"]), promoteToAdmin);
 
-UserRouter.get('/myInfo', verifyToken, checkRole(["Admin", "Ceo", "User"]), myInfo);
+UserRouter.get("/myInfo", verifyToken, checkRole(["Admin", "Ceo", "User"]), myInfo);
+
+UserRouter.get("/myEducationalCentres", verifyToken, checkRole(["Ceo"]), myEducationalCentres);
 
 /**
  * @swagger
@@ -158,7 +159,7 @@ UserRouter.get('/myInfo', verifyToken, checkRole(["Admin", "Ceo", "User"]), myIn
  *       403:
  *         description: "Unauthorized access"
  */
-UserRouter.get("/", verifyToken, checkRole(["Admin", "User"]), findAll);
+UserRouter.get("/", verifyToken, checkRole(["Admin", "Ceo", "User"]), findAll);
 
 /**
  * @swagger
@@ -227,6 +228,6 @@ UserRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
  *       404:
  *         description: "User not found"
  */
-UserRouter.delete("/:id", verifyToken, selfPolice(["Admin"]), remove);
+UserRouter.delete("/:id", remove);
 
 export default UserRouter;

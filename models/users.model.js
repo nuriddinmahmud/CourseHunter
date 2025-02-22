@@ -41,10 +41,10 @@ const Users = sequelize.define("Users", {
   },
 
   status: {
-    type: DataTypes.ENUM("active", "inactive"),
+    type: DataTypes.ENUM("Active", "Inactive"),
     allowNull: true,
-    defaultValue: "inactive",
+    defaultValue: "Inactive",
   },
-});
+}, {timestamps: true});
 
 export default Users;

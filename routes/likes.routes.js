@@ -49,7 +49,6 @@ const likesRouter = Router();
 
 likesRouter.post("/", verifyToken, create)
 
-
 /**
  * @swagger
  * /likes/with-pagination:
