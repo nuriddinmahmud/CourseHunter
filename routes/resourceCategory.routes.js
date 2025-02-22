@@ -14,34 +14,6 @@ const ResourceCategoryRouter = express.Router();
 /**
  * @swagger
  * /resourcecategories:
- *   post:
- *     summary: Create a new resource category
- *     tags: [ResourceCategories]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               image:
- *                 type: string
- *             required:
- *               - name
- *               - image
- *     responses:
- *       200:
- *         description: Resource category created successfully
- *       400:
- *         description: Validation error
- */
-ResourceCategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
-
-/**
- * @swagger
- * /resourcecategories:
  *   get:
  *     summary: Get all resource categories
  *     tags: [ResourceCategories]
@@ -77,6 +49,34 @@ ResourceCategoryRouter.get("/", getAll);
  *         description: Server error
  */
 ResourceCategoryRouter.get("/:id", getOne);
+
+/**
+ * @swagger
+ * /resourcecategories:
+ *   post:
+ *     summary: Create a new resource category
+ *     tags: [ResourceCategories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *             required:
+ *               - name
+ *               - image
+ *     responses:
+ *       200:
+ *         description: Resource category created successfully
+ *       400:
+ *         description: Validation error
+ */
+ResourceCategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
 
 /**
  * @swagger

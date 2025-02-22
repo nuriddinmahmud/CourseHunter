@@ -101,6 +101,8 @@ async function remove(req, res) {
 
 async function getBySearch(req, res) {
   try {
+    console.log(1);
+    
     let query = req.query;
     let keys = Object.keys(query);
     let values = Object.values(query);

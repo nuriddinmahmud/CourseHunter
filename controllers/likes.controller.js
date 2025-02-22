@@ -78,6 +78,8 @@ async function remove(req, res) {
 
 async function sortLikesCount(req, res) {
     try {
+        console.log(1);
+        
         const result = await Likes.findAll({
             attributes: ['Likes.educationalCentreID',
                 [Sequelize.fn('COUNT', Sequelize.col('Likes.educationalCentreID')), 'likeCount']],

@@ -106,8 +106,8 @@ async function verifyOtp(req, res) {
       return res.status(403).send({ message: "OTP is incorrect ❗" });
     }
 
-    if (findUser.status === "inactive") {
-      await Users.update({ status: "active" }, { where: { email } });
+    if (findUser.status === "Inactive") {
+      await Users.update({ status: "Active" }, { where: { email } });
     }
 
     res
@@ -128,7 +128,7 @@ async function login(req, res) {
       return res.status(422).send({ message: "Invalid email or password ❗" });
     }
 
-    if (user.status === "inactive") {
+    if (user.status === "Inactive") {
       return res.status(403).send({ message: "Account not activated ❗" });
     }
 
@@ -152,7 +152,7 @@ async function accessTokenGenereate(payload) {
 
 async function promoteToAdmin(req, res) {
   try {
-      const role = "admin"
+      const role = "Admin"
       let { id } = req.params;
       await Users.update({ role }, { where: { id } })
       res.status(200).send({ message: "Updated successfully" })
