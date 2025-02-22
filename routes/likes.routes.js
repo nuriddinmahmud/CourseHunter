@@ -133,7 +133,6 @@ likesRouter.get("/", getAll);
  */
 likesRouter.get("/:id", getOne);
 
-
 /**
  * @swagger
  * /likes:
@@ -172,7 +171,6 @@ likesRouter.get("/:id", getOne);
  */
 
 likesRouter.post("/", verifyToken, create)
-
 
 /**
  * @swagger

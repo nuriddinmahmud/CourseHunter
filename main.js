@@ -83,7 +83,7 @@ app.use("/image", express.static("./uploads"));
 
 async function bootstrap() {
   try {
-    await sequelize.sync();
+    await sequelize.authenticate();
     console.log("Connected to database successfully ✅");
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (error) {

@@ -13,7 +13,7 @@ const ResourceCategoryRouter = express.Router();
 
 /**
  * @swagger
- * /resourcecategories:
+ * /resourceCategory:
  *   get:
  *     summary: Get all resource categories
  *     tags: [ResourceCategories]
@@ -29,7 +29,7 @@ ResourceCategoryRouter.get("/", getAll);
 
 /**
  * @swagger
- * /resourcecategories/{id}:
+ * /resourceCategory/{id}:
  *   get:
  *     summary: Get a single resource category by ID
  *     tags: [ResourceCategories]
@@ -52,7 +52,7 @@ ResourceCategoryRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /resourcecategories:
+ * /resourceCategory:
  *   post:
  *     summary: Create a new resource category
  *     tags: [ResourceCategories]
@@ -80,7 +80,7 @@ ResourceCategoryRouter.post("/", verifyToken, selfPolice(["Admin"]), create);
 
 /**
  * @swagger
- * /resourcecategories/{id}:
+ * /resourceCategory/{id}:
  *   patch:
  *     summary: Update a resource category by ID
  *     tags: [ResourceCategories]
@@ -116,7 +116,7 @@ ResourceCategoryRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update)
 
 /**
  * @swagger
- * /resourcecategories/{id}:
+ * /resourceCategory/{id}:
  *   delete:
  *     summary: Delete a resource category by ID
  *     tags: [ResourceCategories]

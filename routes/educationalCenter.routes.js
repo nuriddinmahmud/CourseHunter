@@ -17,7 +17,7 @@ const educationalCenterRouter = Router();
 
 /**
  * @swagger
- * /educationalcenters/getSearch:
+ * /educationalcentres/getSearch:
  *   get:
  *     summary: Search educational centers based on query parameters
  *     tags: [EducationalCenters]
@@ -44,7 +44,7 @@ educationalCenterRouter.get("/getSearch", getBySearch);
 
 /**
  * @swagger
- * /educationalcenters/with-pagination:
+ * /educationalcentres/with-pagination:
  *   get:
  *     summary: Get educational centers with pagination
  *     tags: [EducationalCenters]
@@ -67,7 +67,7 @@ educationalCenterRouter.get("/with-pagination", getPaginatedEducationalCentres);
 
 /**
  * @swagger
- * /educationalcenters/sortByName:
+ * /educationalcentres/sortByName:
  *   get:
  *     summary: Get educational centers sorted by name
  *     tags: [EducationalCenters]
@@ -86,7 +86,7 @@ educationalCenterRouter.get("/sortByName", sortByName);
 
 /**
  * @swagger
- * /educationalcenters/sortByAddress:
+ * /educationalcentres/sortByAddress:
  *   get:
  *     summary: Get educational centers sorted by address
  *     tags: [EducationalCenters]
@@ -105,7 +105,7 @@ educationalCenterRouter.get("/sortByAddress", sortByAddress);
 
 /**
  * @swagger
- * /educationalcenters:
+ * /educationalcentres:
  *   get:
  *     summary: Get all educational centers
  *     tags: [EducationalCenters]
@@ -121,7 +121,7 @@ educationalCenterRouter.get("/", getAll);
 
 /**
  * @swagger
- * /educationalcenters/{id}:
+ * /educationalcentres/{id}:
  *   get:
  *     summary: Get a single educational center by ID
  *     tags: [EducationalCenters]
@@ -144,7 +144,7 @@ educationalCenterRouter.get("/:id", getOne);
 
 /**
  * @swagger
- * /educationalcenters:
+ * /educationalcentres:
  *   post:
  *     summary: Create a new educational center
  *     tags: [EducationalCenters]
@@ -183,7 +183,7 @@ educationalCenterRouter.post("/", verifyToken, checkRole(["Ceo", "Admin"]), crea
 
 /**
  * @swagger
- * /educationalcenters/{id}:
+ * /educationalcentres/{id}:
  *   patch:
  *     summary: Update an educational center by ID
  *     tags: [EducationalCenters]
@@ -225,7 +225,7 @@ educationalCenterRouter.patch("/:id", verifyToken, checkRole(["Ceo", "Admin"]), 
 
 /**
  * @swagger
- * /educationalcenters/{id}:
+ * /educationalcentres/{id}:
  *   delete:
  *     summary: Delete an educational center by ID
  *     tags: [EducationalCenters]

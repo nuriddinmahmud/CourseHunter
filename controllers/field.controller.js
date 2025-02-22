@@ -8,13 +8,13 @@ import { Op, where } from "sequelize";
 
 const create = async (req, res) => {
   try {
-    const { error } = fieldValidation(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { error, value } = fieldValidation(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
 
-    const newField = await Field.create(req.body);
-    res.status(201).json(newField);
+    const newField = await Field.create(value);
+    res.status(200).send({message: "Filed created successfully", data: newField});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 

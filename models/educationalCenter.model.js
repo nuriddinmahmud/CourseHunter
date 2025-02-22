@@ -41,7 +41,7 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-});
+}, {timestamps: true});
 
 //CEO
 EducationalCentre.belongsTo(Users, { foreignKey: "userID" });

@@ -9,7 +9,7 @@ import { create } from "../controllers/collabField.controller.js";
 
 /**
  * @swagger
- * /collabField:
+ * /collabFields:
  *   post:
  *     summary: Create a new CollabField
  *     tags: [CollabField]

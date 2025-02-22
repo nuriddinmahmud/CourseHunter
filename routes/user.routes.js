@@ -9,7 +9,7 @@ import {
   promoteToAdmin,
   findOne,
   myEducationalCentres,
-  myInfo,
+  myInfo
 } from "../controllers/users.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import checkRole from "../middleware/rolePolice.js";
@@ -48,8 +48,8 @@ const UserRouter = express.Router();
  *                 example: "StrongPass123"
  *               role:
  *                 type: string
- *                 enum: ["admin", "user", "ceo"]
- *                 example: "user"
+ *                 enum: ["Admin", "User", "Ceo"]
+ *                 example: "User"
  *               avatar:
  *                 type: string
  *                 example: "avatar.jpg"
@@ -142,17 +142,53 @@ UserRouter.post("/login", login);
  */
 UserRouter.patch("/promoteToAdmin/:id", verifyToken, selfPolice(["Admin"]), promoteToAdmin);
 
-UserRouter.get("/myInfo", verifyToken, checkRole(["Admin", "Ceo", "User"]), myInfo);
-
-UserRouter.get("/myEducationalCentres", verifyToken, checkRole(["Ceo"]), myEducationalCentres);
+/**
+ * @swagger
+ * /users/myEducationalCentres:
+ *   get:
+ *     summary: "Get CEO's Educational Centres"
+ *     tags: [Users]
+ *     description: "Retrieves all educational centres created by the logged-in CEO"
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "Educational centres retrieved successfully"
+ *       403:
+ *         description: "Unauthorized user type"
+ *       400:
+ *         description: "Error while retrieving data"
+ */
+UserRouter.get("/myCentres", verifyToken, myEducationalCentres);
 
 /**
  * @swagger
- * /users/:
+ * /users/myInfo:
+ *   get:
+ *     summary: "Get logged-in user info"
+ *     tags: [Users]
+ *     description: "Retrieves the information of the currently logged-in user"
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: "User information retrieved successfully"
+ *       400:
+ *         description: "Unauthorized user type"
+ *       404:
+ *         description: "User not found"
+ */
+UserRouter.get("/myInfo", verifyToken, myInfo);
+
+/**
+ * @swagger
+ * /users:
  *   get:
  *     summary: "Get all users"
  *     tags: [Users]
  *     description: "Retrieves all users (Only for admin)"
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: "Users retrieved successfully"
@@ -168,13 +204,14 @@ UserRouter.get("/", verifyToken, checkRole(["Admin", "Ceo", "User"]), findAll);
  *     summary: "Get user by ID"
  *     tags: [Users]
  *     description: "Retrieves a user by their ID"
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - name: "id"
  *         in: "path"
  *         required: true
- *         description: "User ID"
  *         schema:
- *           type: string
+ *           type: number
  *           example: "123"
  *     responses:
  *       200:
@@ -182,28 +219,133 @@ UserRouter.get("/", verifyToken, checkRole(["Admin", "Ceo", "User"]), findAll);
  *       404:
  *         description: "User not found"
  */
-UserRouter.get("/:id", verifyToken, checkRole(["Admin", "User"]), findOne);
+UserRouter.get("/:id", verifyToken, checkRole(["Admin", "User", "Ceo"]), findOne);
 
 /**
  * @swagger
  * /users/{id}:
  *   patch:
- *     summary: "Update user"
+ *     summary: "Update user information"
  *     tags: [Users]
  *     description: "Updates user data (Admin only)"
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - name: "id"
  *         in: "path"
+ *         description: "ID of the user to update"
  *         required: true
- *         description: "User ID"
  *         schema:
  *           type: string
  *           example: "123"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: "John"
+ *               lastName:
+ *                 type: string
+ *                 example: "Doe"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "john.doe@example.com"
+ *               phone:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               password:
+ *                 type: string
+ *                 example: "new_secure_password"
+ *               role:
+ *                 type: string
+ *                 enum: ["User", "Admin"]
+ *                 example: "User"
+ *               avatar:
+ *                 type: string
+ *                 example: "https://example.com/avatar.jpg"
+ *               status:
+ *                 type: string
+ *                 enum: ["active", "inactive"]
+ *                 example: "active"
  *     responses:
  *       200:
  *         description: "User updated successfully"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User updated successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123"
+ *                     firstName:
+ *                       type: string
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       example: "Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "john.doe@example.com"
+ *                     phone:
+ *                       type: string
+ *                       example: "+1234567890"
+ *                     role:
+ *                       type: string
+ *                       example: "User"
+ *                     avatar:
+ *                       type: string
+ *                       example: "https://example.com/avatar.jpg"
+ *                     status:
+ *                       type: string
+ *                       example: "active"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *       400:
+ *         description: "Bad request"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error_message:
+ *                   type: string
+ *                   example: "Invalid request data"
  *       404:
  *         description: "User not found"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User not found ❗️"
+ *       422:
+ *         description: "Validation error"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Validation error message"
  */
 UserRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
 
@@ -214,11 +356,12 @@ UserRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
  *     summary: "Delete user"
  *     tags: [Users]
  *     description: "Deletes a user by ID (Admin only)"
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - name: "id"
  *         in: "path"
  *         required: true
- *         description: "User ID"
  *         schema:
  *           type: string
  *           example: "123"
@@ -228,6 +371,6 @@ UserRouter.patch("/:id", verifyToken, selfPolice(["Admin"]), update);
  *       404:
  *         description: "User not found"
  */
-UserRouter.delete("/:id", remove);
+UserRouter.delete("/:id", verifyToken, selfPolice(["Admin"]), remove);
 
 export default UserRouter;

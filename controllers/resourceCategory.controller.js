@@ -84,9 +84,6 @@ const remove = async (req, res) => {
   try {
     const { id } = req.params;
     let findCategory = await ResourceCategory.findByPk(id);
-    if(findCategory.image) {
-      deleteOldImage(findCategory.image);
-    } 
 
     let deleteResourceCategory = await ResourceCategory.destroy({where: {id}});
 

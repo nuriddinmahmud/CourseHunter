@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
 import path from 'path';
 import EducationalCentre from "../models/educationalCenter.model.js";
+import Region from "../models/regions.model.js";
 
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
@@ -44,7 +45,6 @@ const transporter = nodemailer.createTransport({
 
 totp.options = { step: 1800, digits: 6 };
 
-
 const deleteOldImage = (imgPath) => { 
   if (imgPath) { 
     const fullPath = path.join("uploads", imgPath); 
@@ -53,7 +53,6 @@ const deleteOldImage = (imgPath) => {
     } 
   } 
 };
-
 
 async function register(req, res) {
   try {
@@ -92,7 +91,6 @@ async function register(req, res) {
   }
 }
 
-
 async function verifyOtp(req, res) {
   try {
     const { email, otp } = req.body;
@@ -118,7 +116,6 @@ async function verifyOtp(req, res) {
   }
 }
 
-
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -139,7 +136,6 @@ async function login(req, res) {
   }
 }
 
-
 async function accessTokenGenereate(payload) {
   try {
     let accessSecret = process.env.ACCESS_KEY || "accessKey";
@@ -148,7 +144,6 @@ async function accessTokenGenereate(payload) {
     console.log(error.message);
   }
 }
-
 
 async function promoteToAdmin(req, res) {
   try {
@@ -161,30 +156,91 @@ async function promoteToAdmin(req, res) {
   }
 }
 
-
-async function myInfo(req, res) {
+async function myEducationalCentres(req, res) {
   try {
-    let { role } = req.user;
-    if (!Array.isArray(role)) {
-      role = [role]; 
+    let { role, id } = req.user;
+    if (!role.includes("Ceo")) {
+      return res.status(403).send({ message: "Unauthorization User type ❗" });
     }
 
-    let foundRole = role.find(r => ["Admin", "Ceo", "User"].includes(r));
-    if(!foundRole) {
-      return res.status(400).send({message: 'Unauthorization user type ❗'});
+    const allCentres = await EducationalCentre.findAll({
+      where: { userID: id },
+      attributes: [
+        "id",
+        "name",
+        "image",
+        "address",
+        "phone",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: [
+        {
+          model: { Users },
+          attribute: [
+            "id",
+            "firstName",
+            "lastName",
+            "email",
+            "phone",
+            "role",
+            "status",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+        {
+          model: { Region },
+          attributes: ["id", "name", "createdAt", "updatedAt"],
+        },
+      ],
+    });
+    if (!allCentres.length) {
+      return res
+        .status(200)
+        .send({ message: "You have not created any Educational Centres yet" });
     }
-
-    const user = await Users.findOne({where: {role: {[Op.in]: [foundRole]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
-    if(!user) {
-      return res.status(404).send({message: "User not found ❗"});
-    }
-
-    res.status(200).send({data: user});
+    res.status(200).send({ data: allCentres });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
 }
 
+async function myInfo(req, res) {
+  try {
+    let { role } = req.user;
+    if (!Array.isArray(role)) {
+      role = [role];
+    }
+
+    let foundRole = role.find((r) => ["Admin", "Ceo", "User"].includes(r));
+    if (!foundRole) {
+      return res.status(400).send({ message: "Unauthorization user type ❗" });
+    }
+
+    const user = await Users.findOne({
+      where: { role: { [Op.in]: [foundRole] } },
+      attributes: [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "role",
+        "avatar",
+        "status",
+        "createdAt",
+        "updatedAt",
+      ],
+    });
+    if (!user) {
+      return res.status(404).send({ message: "User not found ❗" });
+    }
+
+    res.status(200).send({ data: user });
+  } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
 
 async function findAll(req, res) {
   try {
@@ -217,22 +273,19 @@ async function findAll(req, res) {
   }
 }
 
-
 async function findOne(req, res) {
   try {
     const { id } = req.params;
-    const { role } = req.user;
+    let { role } = req.user;
 
-    if (!Array.isArray(role)) {
-      role = [role]; 
-    }
+    role = Array.isArray(role) ? role : [role];
 
     let foundRole = role.find(r => ["Admin", "User", "Ceo"].includes(r));
     if(!foundRole) {
       return res.status(403).send({ message: "Unauthorized user type ❗" });
     }
 
-    let findOneUser = await Users.findOne(id, {where: {role: {[Op.in]: [foundRole]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
+    let findOneUser = await Users.findByPk(id, {where: {role: {[Op.in]: [role]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
     if(!findOneUser) {
       return res.status(404).send({message: "User not found ❗"});
     }
@@ -242,7 +295,6 @@ async function findOne(req, res) {
     res.status(400).send({ error_message: error.message });
   }
 }
-
 
 async function update(req, res) {
   try {
@@ -262,24 +314,19 @@ async function update(req, res) {
       return;
     }
 
-    let result = await Users.findByPk(id, {attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status"]});
+    let result = await Users.findByPk(id, {attributes: ["id", "firstName", "lastName", "email", "phone", "role", "avatar", "status", "createdAt", "updatedAt"]});
     res.status(200).send({message: "User updated successfully", data: result});
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
 }
 
-
 async function remove(req, res) {
   try {
     let { id } = req.params;
     let find = await Users.findByPk(id);
 
-    if(find.avatar) {
-      deleteOldImage(find.avatar);
-    }
-
-    let deletedUser = await Users.destroy({ where: { id, role: {[Op.in]: ["ceo", "user"]}}});
+    let deletedUser = await Users.destroy({ where: { id, role: {[Op.in]: ["Ceo", "User"]}}});
 
     if (!deletedUser) {
       return res.status(404).send({ message: " User not found ❗" });
@@ -291,22 +338,4 @@ async function remove(req, res) {
   }
 }
 
-
-async function myEducationalCentres(req, res) {
-  try {
-    let { role, id } = req.user;
-    if(!role.includes("Ceo")) {
-      return res.status(403).send({message: "Unauthorization User type ❗"});
-    }
-
-    const allCentres = await EducationalCentre.findAll({where: {userID: id}, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]});
-    if(!allCentres.length) {
-      return res.status(200).send({message: "You have not created any Educational Centres yet"});
-    }
-    res.status(200).send({data: allCentres});
-  } catch (error) {
-    res.status(400).send({ error_message: error.message });
-  }
-}
-
-export { register, verifyOtp, login, myInfo, findOne, findAll, update, remove, promoteToAdmin, myEducationalCentres };
+export { register, verifyOtp, login, findOne, findAll, update, remove, promoteToAdmin, myEducationalCentres, myInfo };

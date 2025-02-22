@@ -5,11 +5,11 @@ import { Op } from "sequelize";
 
 const create = async (req, res) => {
   try {
-    const { error } = branchesValidation(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { error, value } = branchesValidation(req.body);
+    if (error) return res.status(422).send({ error: error.details[0].message });
 
-    const newBranch = await Branch.create(req.body);
-    res.status(201).json(newBranch);
+    const newBranch = await Branch.create(value);
+    res.status(200).send({message: "Branch created successfully", data: newBranch});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -32,7 +32,7 @@ const getAll = async (req, res) => {
 
     const branches = await Branch.findAndCountAll({
       where: whereClause,
-      include: [{ model: Region }],
+      include: [{ model: Region, attributes: ["id", "name", "createdAt", "updatedAt"] }],
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
     });
@@ -52,14 +52,14 @@ const getOne = async (req, res) => {
   try {
     const { id } = req.params;
     const branch = await Branch.findByPk(id, {
-      include: [{ model: Region, attributes: ["id", "name"] }],
+      include: [{ model: Region, attributes: ["id", "name", "createdAt", "updatedAt"] }],
     });
 
     if (!branch) return res.status(404).json({ message: "Branch not found" });
 
-    res.status(200).json(branch);
+    res.status(200).send({data: branch});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 
@@ -70,12 +70,12 @@ const update = async (req, res) => {
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     const branch = await Branch.findByPk(id);
-    if (!branch) return res.status(404).json({ message: "Branch not found" });
+    if (!branch) return res.status(404).send({ message: "Branch not found" });
 
     await branch.update(req.body);
-    res.status(200).json(branch);
+    res.status(200).send({message: "Branch updated successfully", data: branch});
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -85,10 +85,10 @@ const remove = async (req, res) => {
     const branch = await Branch.findByPk(id);
     if (!branch) return res.status(404).json({ message: "Branch not found" });
 
-    await branch.destroy();
-    res.status(200).json({ message: "Branch deleted successfully" });
+    await branch.destroy(id);
+    res.status(200).send({ message: "Branch deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).send({ error: err.message });
   }
 };
 

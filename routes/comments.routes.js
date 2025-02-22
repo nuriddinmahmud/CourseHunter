@@ -9,8 +9,6 @@ const commentRouter = Router();
  * tags:
  *   name: Comments
  */
-
-
 /**
  * @swagger
  * /comments/with-pagination:
@@ -153,7 +151,6 @@ commentRouter.get("/", getAll);
  *         description: Comment not found
  */
 commentRouter.get("/:id", getOne);
-
 
 /**
  * @swagger

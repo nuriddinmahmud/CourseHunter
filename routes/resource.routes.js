@@ -36,7 +36,6 @@ const resourceRoute = Router();
 
 resourceRoute.get('/', findAll);
 
-
 /**
  * @swagger
  * /resources/{id}:
@@ -59,7 +58,6 @@ resourceRoute.get('/', findAll);
  */
 
 resourceRoute.get('/:id', findOne);
-
 
 /**
  * @swagger
@@ -101,7 +99,6 @@ resourceRoute.get('/:id', findOne);
  */
 
 resourceRoute.post('/', verifyToken, create);
-
 
 /**
  * @swagger
@@ -146,7 +143,6 @@ resourceRoute.post('/', verifyToken, create);
  */
 
 resourceRoute.patch('/:id', verifyToken, selfPolice(["User", "Admin"]), update);
-
 
 /**
  * @swagger
