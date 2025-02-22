@@ -189,6 +189,4 @@ likesRouter.delete("/:id", verifyToken, remove);
  */
 likesRouter.get("/sortLikesCount", sortLikesCount);
 
-
-
 export default likesRouter;

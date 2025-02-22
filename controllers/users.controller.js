@@ -21,7 +21,6 @@ function FormatphoneNumber(phone) {
       if(!/^\d{12}$/.test(phone)) {
           throw new Error("Phone number is wrong ❗");
       }
-
       let raqamdavlatqodi = phone.slice(0, 3);
       let asosiyqismi = phone.slice(3, 5);
       let birinchiqismi = phone.slice(5, 8);
@@ -35,8 +34,6 @@ function FormatphoneNumber(phone) {
   }
 }
 
-export default FormatphoneNumber;
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -47,6 +44,7 @@ const transporter = nodemailer.createTransport({
 
 totp.options = { step: 1800, digits: 6 };
 
+
 const deleteOldImage = (imgPath) => { 
   if (imgPath) { 
     const fullPath = path.join("uploads", imgPath); 
@@ -56,13 +54,14 @@ const deleteOldImage = (imgPath) => {
   } 
 };
 
+
 async function register(req, res) {
   try {
     const body = req.body;
 
     let formattedPhoneNumber = FormatphoneNumber(body.phone);
     if(!formattedPhoneNumber) {
-      return res.status(422).send({message: 'Invalid a phone number format❗'}); 
+      return res.status(422).send({message: 'Example phone number: 998507525150'}); 
     }
 
     body.phone = formattedPhoneNumber;
@@ -93,6 +92,7 @@ async function register(req, res) {
   }
 }
 
+
 async function verifyOtp(req, res) {
   try {
     const { email, otp } = req.body;
@@ -118,6 +118,7 @@ async function verifyOtp(req, res) {
   }
 }
 
+
 async function login(req, res) {
   try {
     const { email, password } = req.body;
@@ -138,6 +139,7 @@ async function login(req, res) {
   }
 }
 
+
 async function accessTokenGenereate(payload) {
   try {
     let accessSecret = process.env.ACCESS_KEY || "accessKey";
@@ -146,6 +148,7 @@ async function accessTokenGenereate(payload) {
     console.log(error.message);
   }
 }
+
 
 async function promoteToAdmin(req, res) {
   try {
@@ -158,26 +161,50 @@ async function promoteToAdmin(req, res) {
   }
 }
 
+
+async function myInfo(req, res) {
+  try {
+    let { role } = req.user;
+
+    if (!Array.isArray(role)) {
+      role = [role]; 
+    }
+
+    let foundRole = role.find(r => ["Admin", "Ceo", "User"].includes(r));
+
+    if(!foundRole) {
+      return res.status(400).send({message: 'Unauthorization user type ❗'});
+    }
+
+    const user = await Users.findOne({where: {role: {[Op.in]: [foundRole]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
+    if(!user) {
+      return res.status(404).send({message: "User not found ❗"});
+    }
+
+    res.status(200).send({data: user});
+  } catch (error) {
+    res.status(400).send({ error_message: error.message });
+  }
+}
+
+
 async function findAll(req, res) {
   try {
     let { role } = req.user;
-    let findAllUsers = [];
 
-    if (role === "admin") {
-      findAllUsers = await Users.findAll({where: { role: { [Op.in]: ["user", "ceo", ] }}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
+    if (!Array.isArray(role)) {
+      role = [role]; 
     }
 
-    else if(role === "user") { 
-      findAllUsers = await Users.findOne({where: { role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
-    }
-    
-    else {
-      return res.status(403).send({message: 'Unauthorization user type ❗'});
+    let foundRole = role.find(r => ["Admin", "Ceo", "User"].includes(r));
+    if(!foundRole) {
+      return res.status(403).send({message: " Unauthorization user type ❗"});
     }
 
-    // if(!findAllUsers.length) {
-    //   return res.status(200).send({message: 'Users are empty ❗'});
-    // }
+    let findAllUsers = await Users.findAll({where: {role: {[Op.in]: [foundRole]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
+    if(!findAllUsers.length) {
+      return res.status(200).send({message: "Users are empty"});
+    }
 
     res.status(200).send({ data: findAllUsers });
   } catch (error) {
@@ -185,36 +212,32 @@ async function findAll(req, res) {
   }
 }
 
+
 async function findOne(req, res) {
   try {
     const { id } = req.params;
     const { role } = req.user;
 
-    let user = [];
-
-    if (role === "admin") {
-      user = await Users.findOne({ where: { id, role: {[Op.in]: ["ceo", "user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
-      if (!user) {
-        return res.status(404).send({ message: "User or Ceo not found ❗"});
-      }
-    }
-    
-    else if (role === "user") {
-      user = await Users.findOne({ where: { id, role: {[Op.in]: ["user"]}}, attributes: ["id", "firstName", "lastName", "email",  "phone", "role", "avatar", "status"] });
-      if (!user) {
-        return res.status(404).send({ message: "User not found ❗" });
-      }
+    if (!Array.isArray(role)) {
+      role = [role]; 
     }
 
-    else {
+    let foundRole = role.find(r => ["Admin", "User", "Ceo"].includes(r));
+    if(!foundRole) {
       return res.status(403).send({ message: "Unauthorized user type ❗" });
     }
 
-    res.status(200).send({ data: user });
+    let findOneUser = await Users.findOne(id, {where: {role: {[Op.in]: [foundRole]}}, attributes: ["id", "firstName", "lastName", "email", "role", "avatar", "status", "createdAt", "updatedAt"]});
+    if(!findOneUser) {
+      return res.status(404).send({message: "User not found ❗"});
+    }
+
+    res.status(200).send({ data: findOneUser });
   } catch (error) {
     res.status(400).send({ error_message: error.message });
   }
 }
+
 
 async function update(req, res) {
   try {
@@ -241,6 +264,7 @@ async function update(req, res) {
   }
 }
 
+
 async function remove(req, res) {
   try {
     let { id } = req.params;
@@ -262,6 +286,7 @@ async function remove(req, res) {
   }
 }
 
+
 async function myEducationalCentres(req, res) {
   try {
     const allCentres = await Users.findAll({where: {role: {[Op.in]: ["ceo"]}}, attributes: ["id", "firstName", "lastName", "email", "phone",  "role", "avatar", "status"]}, {include: {model: EducationalCentre, attributes: ["id", "name", "image", "address", "userID", "regionID", "phone"]}});
@@ -271,4 +296,4 @@ async function myEducationalCentres(req, res) {
   }
 }
 
-export { register, verifyOtp, login, findOne, findAll, update, remove, promoteToAdmin, myEducationalCentres };
+export { register, verifyOtp, login, myInfo, findOne, findAll, update, remove, promoteToAdmin, myEducationalCentres };

@@ -19,7 +19,7 @@ function verifyToken(req, res, next) {
 
     next();
   } catch (error) {
-    res.status(500).send({ error_message: error.message });
+    res.status(400).send({ error_message: error.message });
   }
 }
 

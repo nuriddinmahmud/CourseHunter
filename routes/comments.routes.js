@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { create, getAll, getBySearch, getOne, getPaginatedComments, remove, sortByCreatedDate, sortByStar, sortCommenstCount, update } from "../controllers/comment.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
+
 const commentRouter = Router();
+
 /**
  * @swagger
  * tags:
