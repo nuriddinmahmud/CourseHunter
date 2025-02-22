@@ -19,8 +19,7 @@ async function create(req, res) {
         }
 
         const createCourse = await Course.create(value);
-        res.status(200).send({ message: 'Course created succesfully', data: createCourse });
-
+        res.status(200).send({ message: 'Course created succesfully', data: createCourse });        
     } catch (error) {
         res.status(500).send({ error_message: error.message });
     }

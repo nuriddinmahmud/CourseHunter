@@ -2,6 +2,7 @@ import { Router } from "express";
 import { create, findAll, findOne, remove, update } from "../controllers/courses.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import checkRole from "../middleware/rolePolice.js";
+import selfPolice from "../middleware/selfPolice.js";
 
 const courseRoute = Router();
 
@@ -90,7 +91,7 @@ courseRoute.get('/', findAll);
  *       500:
  *         description: Server error
  */
-courseRoute.post('/', verifyToken, checkRole(['Admin']), create);
+courseRoute.post('/', verifyToken, selfPolice(['Admin']), create);
 
 /**
  * @swagger

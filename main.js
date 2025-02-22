@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "DELETE", 'OPTIONS'],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -86,7 +87,7 @@ async function bootstrap() {
     console.log("Connected to database successfully ✅");
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (error) {
-    console.log("Database ulanishda xatolik:", error.message);
+    console.log(error.message);
   }
 }
 

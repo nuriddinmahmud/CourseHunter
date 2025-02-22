@@ -8,6 +8,7 @@ import {
 } from "../controllers/branches.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 import checkRole from "../middleware/rolePolice.js";
+import selfPolice from "../middleware/selfPolice.js";
 
 const BranchRouter = express.Router();
 
@@ -53,7 +54,7 @@ const BranchRouter = express.Router();
  *       500:
  *         description: Server error
  */
-BranchRouter.post("/", verifyToken, checkRole(['Admin', 'Ceo']), create);
+BranchRouter.post("/", verifyToken, selfPolice(['Admin', 'Ceo']), create);
 
 /**
  * @swagger
