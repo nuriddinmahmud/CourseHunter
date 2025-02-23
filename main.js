@@ -7,14 +7,14 @@ import swaggerUi from "swagger-ui-express";
 import mainRoute from "./routes/index.js";
 
 dotenv.config();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3005;
 
 const app = express();
 app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST", "PATCH", "DELETE", 'OPTIONS'],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -29,7 +29,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:3000/api`,
+      url: `http://localhost:${PORT}/api`,
       description: "Local server",
     },
   ],
@@ -75,6 +75,7 @@ app.use(
     },
   })
 );
+
 console.log(`📄 Swagger UI yuklandi: http://localhost:${PORT}/api-docs`);
 
 
@@ -83,7 +84,7 @@ app.use("/image", express.static("./uploads"));
 
 async function bootstrap() {
   try {
-    await sequelize.authenticate();
+    await sequelize.sync();
     console.log("Connected to database successfully ✅");
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (error) {
