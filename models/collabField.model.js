@@ -23,10 +23,4 @@ const CollabField = sequelize.define("CollabField", {
   },
 });
 
-CollabField.hasMany(Field, { foreignKey: "fieldID" });
-Field.belongsTo(CollabField, { foreignKey: "fieldID" });
-
-CollabField.hasMany(EducationalCentre, { foreignKey: "educationalCentreID" });
-EducationalCentre.belongsTo(CollabField, { foreignKey: "educationalCentreID" });
-
 export default CollabField;

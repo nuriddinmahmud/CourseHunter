@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
+import Branch from "./branches.model.js";
 import sequelize from "../config/database.js";
-import Region from "../models/regions.model.js";
+import Region from "./regions.model.js";
 import Users from "./users.model.js";
 
 const EducationalCentre = sequelize.define("EducationalCentre", {
@@ -25,7 +26,7 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
       model: Users,
       key: "id",
     },
-    allowNull: true,
+    allowNull: false,
   },
 
   regionID: {
@@ -42,12 +43,5 @@ const EducationalCentre = sequelize.define("EducationalCentre", {
     allowNull: false,
   },
 }, {timestamps: true});
-
-//CEO
-EducationalCentre.belongsTo(Users, { foreignKey: "userID" });
-Users.hasMany(EducationalCentre, { foreignKey: "userID" });
-
-EducationalCentre.belongsTo(Region, { foreignKey: "regionID" });
-Region.hasMany(EducationalCentre, { foreignKey: "regionID" });
 
 export default EducationalCentre;

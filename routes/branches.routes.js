@@ -40,19 +40,23 @@ const BranchRouter = express.Router();
  *               regionID:
  *                 type: integer
  *                 description: ID of the region
+ *               centreID: 
+ *                 type: integer
+ *                 description: ID of the centre
  *             required:
  *               - name
  *               - image
  *               - phone
  *               - address
  *               - regionID
+ *               - centreID
  *     responses:
  *       201:
  *         description: Branch created successfully
- *       400:
+ *       422:
  *         description: Bad request, validation error
- *       500:
- *         description: Server error
+ *       400:
+ *         description: Error
  */
 BranchRouter.post("/", verifyToken, selfPolice(['Admin', 'Ceo']), create);
 
@@ -117,8 +121,10 @@ BranchRouter.post("/", verifyToken, selfPolice(['Admin', 'Ceo']), create);
  *                         type: string
  *                       regionID:
  *                         type: integer
- *       500:
- *         description: Server error
+ *                       centreID:
+ *                         type: integer
+ *       400:
+ *         description: Error
  */
 BranchRouter.get("/", getAll);
 
@@ -155,10 +161,12 @@ BranchRouter.get("/", getAll);
  *                   type: string
  *                 regionID:
  *                   type: integer
+ *                 centreID: 
+ *                   type: integer
  *       404:
  *         description: Branch not found
- *       500:
- *         description: Server error
+ *       400:
+ *         description: Error
  */
 BranchRouter.get("/:id", getOne);
 
@@ -192,15 +200,17 @@ BranchRouter.get("/:id", getOne);
  *                 type: string
  *               regionID:
  *                 type: integer
+ *               centreID: 
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Branch updated successfully
- *       400:
+ *       422:
  *         description: Bad request, validation error
  *       404:
  *         description: Branch not found
- *       500:
- *         description: Server error
+ *       400:
+ *         description: Error
  */
 BranchRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
 
@@ -222,8 +232,8 @@ BranchRouter.patch("/:id", verifyToken, checkRole(['Admin']), update);
  *         description: Branch deleted successfully
  *       404:
  *         description: Branch not found
- *       500:
- *         description: Server error
+ *       400:
+ *         description: Error
  */
 BranchRouter.delete("/:id", verifyToken, checkRole(['Admin']), remove);
 

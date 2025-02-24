@@ -2,9 +2,9 @@ import Joi from "joi";
 
 function commentValidation(data){
     const commentSchema = Joi.object({
-        description: Joi.string().min(2).required(),
-        star: Joi.number().required(),
-        createdAt: Joi.date(),
+        description: Joi.string().min(2).pattern(/^[a-zA-Z]+$/).required(),
+        star: Joi.number().positive().required(),
+        createdAt: Joi.date().optional(),
         educationalCentreID: Joi.number().positive().required(),
     });
     return commentSchema.validate(data, {abortEarly: true});
@@ -12,7 +12,7 @@ function commentValidation(data){
 
 function commentValidationUpdate(data){
     const commentSchema = Joi.object({
-        description: Joi.string().min(2),
+        description: Joi.string().min(2).pattern(/^[a-zA-Z]+$/),
         star: Joi.number().positive(),
         createdAt: Joi.date(),
         educationalCentreID: Joi.number().positive(),

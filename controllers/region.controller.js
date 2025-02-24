@@ -49,7 +49,7 @@ async function create(req, res) {
     let newRegion = await Region.create(body);
     res
       .status(200)
-      .send({ msg: "Region created seccesed ✅", data: newRegion });
+      .send({data: newRegion });
   } catch (error) {
     res.status(400).send(error.message);
   }

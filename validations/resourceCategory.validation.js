@@ -2,7 +2,7 @@ import Joi from "joi";
 
 function resourceCategoryValidation(data) {
   const resourceSchema = Joi.object({
-    name: Joi.string().min(2).required(),
+    name: Joi.string().min(2).pattern(/^[a-zA-Z]+$/).required(),
     image: Joi.string().required(),
   });
   return resourceSchema.validate(data, {abortEarly: true});
@@ -10,7 +10,7 @@ function resourceCategoryValidation(data) {
 
 function resourceCategoryValidationUpdate(data) {
   const resourceSchema = Joi.object({
-    name: Joi.string().min(2),
+    name: Joi.string().min(2).pattern(/^[a-zA-Z]+$/),
     image: Joi.string(),
   });
   return resourceSchema.validate(data, {abortEarly: true});

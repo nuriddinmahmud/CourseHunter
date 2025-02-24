@@ -17,24 +17,6 @@ import Region from "../models/regions.model.js";
 dotenv.config();
 const TOTP_KEY = process.env.SECRET_KEY;
 
-function FormatphoneNumber(phone) {
-  try {
-      if(!/^\d{12}$/.test(phone)) {
-          throw new Error("Phone number is wrong ❗");
-      }
-      let raqamdavlatqodi = phone.slice(0, 3);
-      let asosiyqismi = phone.slice(3, 5);
-      let birinchiqismi = phone.slice(5, 8);
-      let ikkinchiqismi = phone.slice(8, 10);
-      let oxirgiqismi = phone.slice(10, 12);
-
-      return `+${raqamdavlatqodi} (${asosiyqismi}) ${birinchiqismi}-${ikkinchiqismi}-${oxirgiqismi}`;
-
-  } catch(e) {
-      console.log(e.message);
-  }
-}
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -57,13 +39,6 @@ const deleteOldImage = (imgPath) => {
 async function register(req, res) {
   try {
     const body = req.body;
-
-    let formattedPhoneNumber = FormatphoneNumber(body.phone);
-    if(!formattedPhoneNumber) {
-      return res.status(422).send({message: "Wrong phone number, You should enter the phone number in this view: 998507525150"}); 
-    }
-
-    body.phone = formattedPhoneNumber;
 
     let findUser = await Users.findOne({where: { email: body.email }});
     if(findUser) {

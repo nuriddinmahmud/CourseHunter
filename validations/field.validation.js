@@ -2,7 +2,7 @@ import Joi from "joi";
 
 function fieldValidation(data) {
   const fieldSchema = Joi.object({
-    name: Joi.string().min(2).required(),
+    name: Joi.string().min(2).pattern(/^[a-zA-Z]+$/).required(),
     image: Joi.string().required(),
     courseID: Joi.number().positive(),
   });
@@ -11,7 +11,7 @@ function fieldValidation(data) {
 
 function fieldValidationUpdate(data) {
   const fieldSchema = Joi.object({
-    name: Joi.string().min(2),
+    name: Joi.string().min(2).pattern(/^[a-zA-Z]+$/),
     image: Joi.string(),
     courseID: Joi.number().positive(),
   });

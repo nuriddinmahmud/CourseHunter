@@ -42,10 +42,4 @@ const Resource = sequelize.define("Resource", {
   },
 });
 
-Resource.belongsTo(Users, { foreignKey: "createdBy" });
-Users.hasMany(Resource, { foreignKey: "createdBy" });
-
-ResourceCategory.hasMany(Resource, { foreignKey: "categoryID" });
-Resource.belongsTo(ResourceCategory, { foreignKey: "categoryID" });
-
 export default Resource;

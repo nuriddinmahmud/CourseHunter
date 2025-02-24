@@ -23,7 +23,4 @@ const Field = sequelize.define("Field", {
   },
 });
 
-Field.belongsTo(Course, { foreignKey: "courseID" });
-Course.hasMany(Field, { foreignKey: "courseID" });
-
 export default Field;

@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import Region from "./regions.model.js";
+import EducationalCentre from "./educationalCenter.model.js";
 
 const Branch = sequelize.define("Branch", {
   name: {
@@ -22,6 +23,15 @@ const Branch = sequelize.define("Branch", {
     allowNull: false,
   },
 
+  centreID: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: EducationalCentre,
+      key: "id",
+    },
+    allowNull: false,
+  },
+
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -32,8 +42,5 @@ const Branch = sequelize.define("Branch", {
     allowNull: false,
   },
 });
-
-Branch.belongsTo(Region, { foreignKey: "regionID" });
-Region.hasMany(Branch, { foreignKey: "regionID" });
 
 export default Branch;
